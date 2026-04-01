@@ -1,0 +1,23 @@
+<div class="chatbot-wrapper" *ngIf="isVisible">
+    <!-- Chat Icon Toggle Button -->
+    <button class="chat-toggle-btn" (click)="toggleChat()" [class.active]="isOpen">
+        <span *ngIf="!isOpen">🤖</span>
+        <span *ngIf="isOpen">✕</span>
+    </button>
+
+    <!-- Floating Chat Window -->
+    <div class="chat-window" *ngIf="isOpen">
+        <div class="chat-header text-neon-red">
+            Master AI Assistant
+        </div>
+        <div class="chat-body" #chatBody>
+            <div *ngFor="let msg of messages" class="chat-msg" [ngClass]="msg.role">
+                {{ msg.text }}
+            </div>
+        </div>
+        <div class="chat-footer">
+            <input type="text" [(ngModel)]="userInput" (keyup.enter)="sendMessage()" placeholder="Ask about EQ, mastering, vocals..." />
+            <button (click)="sendMessage()">Send</button>
+        </div>
+    </div>
+</div>

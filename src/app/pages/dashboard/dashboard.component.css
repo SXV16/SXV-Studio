@@ -1,0 +1,1159 @@
+/* =========================================
+   DAW Layout Grid Variables & Structure
+   ========================================= */
+:host {
+    display: block;
+    min-height: calc(100vh - 80px);
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.daw-container {
+    display: grid;
+    grid-template-areas:
+        "sidebar workspace";
+    grid-template-columns: 80px 1fr;
+    grid-template-rows: 1fr;
+    min-height: calc(100vh - 80px);
+    width: 100%;
+    background-color: #050505;
+    color: var(--text-light);
+    font-family: inherit;
+}
+
+.mixer-page-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    height: 100%;
+}
+.mixer-page-layout .daw-right-panel, .mixer-page-layout .daw-timeline {
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    position: relative;
+}
+.mixer-page-layout .daw-right-panel {
+    flex-grow: 1;
+    min-height: 400px;
+}
+.mixer-page-layout .daw-timeline {
+    min-height: 350px;
+}
+
+/* Base Panel Styles */
+.daw-panel {
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: #0a0a0a;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Scrollbars for panels */
+.daw-panel::-webkit-scrollbar {
+    width: 8px;
+}
+.daw-panel::-webkit-scrollbar-track {
+    background: #0a0a0a;
+}
+.daw-panel::-webkit-scrollbar-thumb {
+    background: rgba(255, 0, 0, 0.2);
+    border-radius: 4px;
+}
+.daw-panel::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 0, 0, 0.5);
+}
+
+/* =========================================
+   Sidebar (Left)
+   ========================================= */
+.daw-sidebar {
+    grid-area: sidebar;
+    background: #080808;
+    border-right: 1px solid rgba(255, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+    gap: 20px;
+    z-index: 10;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+    padding: 10px 0;
+    position: relative;
+}
+
+.nav-item:hover, .nav-item.active {
+    color: #fff;
+    background: rgba(255, 0, 0, 0.05);
+}
+
+.nav-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--neon-red);
+    box-shadow: 0 0 10px var(--neon-red);
+}
+
+.nav-icon {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+}
+
+.nav-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* =========================================
+   Header (Top)
+   ========================================= */
+.daw-header {
+    grid-area: header;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    background: linear-gradient(to right, #0a0a0a, #111);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.header-stats {
+    display: flex;
+    gap: 30px;
+}
+
+.stat-box {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.stat-value {
+    font-size: 1.1rem;
+    color: #fff;
+    font-weight: bold;
+}
+
+.stat-value.highlight {
+    color: var(--neon-red);
+    text-shadow: var(--glow-red);
+}
+
+/* =========================================
+   Center Workspace
+   ========================================= */
+.daw-workspace {
+    grid-area: workspace;
+    padding: 20px;
+    overflow-y: auto;
+    position: relative;
+    background: radial-gradient(circle at center, #111 0%, #050505 100%);
+}
+
+.workspace-title {
+    margin-top: 0;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 0, 0, 0.2);
+    padding-bottom: 10px;
+    font-size: 1.5rem;
+    color: #fff;
+}
+
+/* Library View */
+.track-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.track-row {
+    display: grid;
+    grid-template-columns: 40px 1fr 100px 100px 150px;
+    align-items: center;
+    background: #111;
+    padding: 10px 15px;
+    border-radius: 4px;
+    border-left: 2px solid transparent;
+    transition: all 0.2s;
+}
+
+.track-row:hover {
+    background: #1a1a1a;
+    border-left-color: var(--neon-red);
+}
+
+.track-play-btn {
+    background: transparent;
+    border: none;
+    color: var(--neon-red);
+    font-size: 1.2rem;
+    cursor: pointer;
+    outline: none;
+}
+
+.track-play-btn:hover {
+    text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+    transform: scale(1.1);
+}
+
+.fake-waveform {
+    height: 30px;
+    width: 100%;
+    background: repeating-linear-gradient(90deg, 
+        rgba(255, 255, 255, 0.1) 0px, 
+        rgba(255, 255, 255, 0.1) 2px, 
+        transparent 2px, 
+        transparent 4px);
+    opacity: 0.5;
+    border-radius: 2px;
+}
+
+.track-row:hover .fake-waveform {
+    background: repeating-linear-gradient(90deg, 
+        rgba(255, 0, 0, 0.4) 0px, 
+        rgba(255, 0, 0, 0.4) 2px, 
+        transparent 2px, 
+        transparent 4px);
+    opacity: 1;
+}
+
+.track-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+.track-actions button {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+}
+.track-actions button:hover {
+    border-color: var(--neon-red);
+    color: var(--neon-red);
+    background: rgba(255, 0, 0, 0.1);
+}
+
+/* Pro Subscription View */
+.pro-container {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    margin-top: 40px;
+    flex-wrap: wrap;
+}
+.plan-card {
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 30px;
+    width: 300px;
+    text-align: center;
+    position: relative;
+}
+.plan-card.pro-active {
+    border-color: var(--neon-red);
+    box-shadow: 0 0 30px rgba(255, 0, 0, 0.2);
+    animation: proGlow 4s infinite alternate;
+}
+@keyframes proGlow {
+    0% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.2), inset 0 0 10px rgba(255, 0, 0, 0.05); }
+    100% { box-shadow: 0 0 40px rgba(255, 0, 0, 0.4), inset 0 0 20px rgba(255, 0, 0, 0.1); }
+}
+
+.plan-price { font-size: 2.5rem; font-weight: bold; margin: 20px 0; color: #fff; }
+.plan-features { list-style: none; padding: 0; margin: 0 0 30px 0; text-align: left; }
+.plan-features li { margin-bottom: 10px; color: #bbb; border-bottom: 1px solid #222; padding-bottom: 10px; }
+.plan-features li::before { content: '✓'; color: var(--neon-red); margin-right: 10px; }
+
+/* =========================================
+   Right Panel (Mixer)
+   ========================================= */
+.daw-right-panel {
+    grid-area: right-panel;
+    border-left: 1px solid rgba(255, 255, 255, 0.05);
+    background: #0f0f0f;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.mixer-header {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-align: center;
+    margin-bottom: 15px;
+    letter-spacing: 2px;
+}
+
+.channel-strips {
+    display: flex;
+    justify-content: space-around;
+    height: calc(100% - 40px);
+}
+
+.strip {
+    width: 60px;
+    background: #1a1a1a;
+    border: 1px solid #222;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 5px;
+    position: relative;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+}
+
+.strip-label {
+    font-size: 0.6rem;
+    color: #888;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.knob-container {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #333;
+    border: 2px solid #111;
+    position: relative;
+    margin-bottom: 15px;
+    box-shadow: inset 0 2px 2px rgba(255,255,255,0.1), 0 2px 5px rgba(0,0,0,0.5);
+}
+.knob-indicator {
+    width: 2px;
+    height: 10px;
+    background: #fff;
+    position: absolute;
+    top: 2px;
+    left: 14px;
+    transform-origin: 1px 13px;
+    transform: rotate(0deg); /* Adjust via inline style for effect or leave static */
+}
+
+/* Vertical Slider implementation */
+.fader-container {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    margin: 10px 0;
+    width: 100%;
+}
+
+.fader.viz-bar {
+    width: 8px;
+    height: 10px;
+    background: var(--neon-red);
+    border-radius: 4px;
+    transition: height 0.1s ease;
+}
+
+/* Custom BPM Stepper */
+.bpm-input {
+    width: 45px;
+    height: 29px;
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 0.85rem;
+    padding: 0;
+    text-align: center;
+    box-shadow: none;
+    outline: none;
+    appearance: textfield;
+    -moz-appearance: textfield;
+}
+
+.bpm-input::-webkit-outer-spin-button,
+.bpm-input::-webkit-inner-spin-button {
+    appearance: none;
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.bpm-stepper-btn {
+    background: transparent;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 0 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    transition: color 0.2s, background 0.2s;
+}
+
+.bpm-stepper-btn:hover {
+    color: var(--neon-red);
+    background: rgba(255, 0, 0, 0.1);
+}
+
+.fader-track {
+    width: 4px;
+    height: 100%;
+    background: #000;
+    border-radius: 2px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.8);
+}
+
+input[type=range][orient=vertical] {
+    -webkit-appearance: slider-vertical; /* WebKit */
+    appearance: slider-vertical;
+    width: 8px;
+    height: 100%;
+    padding: 0 5px;
+    position: absolute;
+    background: transparent;
+    outline: none;
+    cursor: grab;
+}
+
+input[type=range][orient=vertical]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 20px;
+    width: 24px;
+    border-radius: 2px;
+    background: #444;
+    cursor: pointer;
+    border: 1px solid #111;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.2);
+    /* Adding the horizontal grip line detail */
+    background-image: linear-gradient(to bottom, transparent 45%, #222 45%, #222 55%, transparent 55%);
+}
+
+.meter-container {
+    width: 8px;
+    height: 100%;
+    background: #000;
+    position: absolute;
+    right: 5px;
+    bottom: 10px;
+    top: 100px;
+    border-radius: 1px;
+    overflow: hidden;
+}
+
+.meter-level {
+    width: 100%;
+    height: 0%; /* Dynamic */
+    background: linear-gradient(to top, #333 0%, var(--neon-red) 100%);
+    position: absolute;
+    bottom: 0;
+    transition: height 0.1s;
+}
+
+/* Mock animation for meters */
+.strip:nth-child(1) .meter-level { animation: bounceMeter 1.2s ease infinite alternate; height: 60%; }
+.strip:nth-child(2) .meter-level { animation: bounceMeter 1.5s ease infinite alternate-reverse; height: 40%; }
+.strip:nth-child(3) .meter-level { animation: bounceMeter 0.9s ease infinite alternate; height: 75%; }
+
+@keyframes bounceMeter {
+    0% { height: 10%; }
+    50% { height: 80%; background: linear-gradient(to top, #555 0%, #ff4444 80%, #ff0000 100%); }
+    100% { height: 40%; }
+}
+
+.strip-buttons {
+    display: flex;
+    gap: 2px;
+    margin-top: 10px;
+}
+.strip-btn {
+    width: 20px;
+    height: 20px;
+    border: 1px solid #111;
+    background: #222;
+    color: #666;
+    font-size: 0.6rem;
+    cursor: pointer;
+    border-radius: 2px;
+}
+.strip-btn.muted { background: var(--neon-dark-red); color: #fff; box-shadow: inset 0 0 5px #000; }
+.strip-btn.soloed { background: #ffcc00; color: #000; } /* Actually, stick to red/white/black theme */
+.strip-btn.solo-active { background: #fff; color: #000; }
+
+/* =========================================
+   Timeline (Bottom)
+   ========================================= */
+.daw-timeline {
+    grid-area: timeline;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    background: #0a0a0a;
+    display: flex;
+    flex-direction: column;
+    overflow-x: auto;
+    overflow-y: auto;
+    position: relative;
+    min-height: 280px;
+}
+
+.timeline-ruler {
+    height: 25px;
+    background: #111;
+    border-bottom: 1px solid #222;
+    display: flex;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background-image: repeating-linear-gradient(to right, #333 0px, #333 1px, transparent 1px, transparent 50px);
+}
+
+.time-marker {
+    display: inline-block;
+    width: 50px;
+    font-size: 0.6rem;
+    color: #666;
+    padding-left: 2px;
+}
+
+.timeline-tracks {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0;
+    position: relative;
+    background-image: repeating-linear-gradient(to bottom, transparent 0px, transparent 39px, #1a1a1a 39px, #1a1a1a 40px);
+}
+
+.timeline-row {
+    height: 40px;
+    position: relative;
+}
+
+.audio-block {
+    position: absolute;
+    height: 30px;
+    top: 5px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+    cursor: grab;
+    overflow: hidden;
+}
+
+.audio-block.red-block { background: rgba(255, 0, 0, 0.1); border-color: rgba(255, 0, 0, 0.4); }
+.audio-block.gray-block { background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.2); }
+
+/* SVG Waveform Background for Blocks */
+.audio-block::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: repeating-linear-gradient(90deg, 
+        rgba(255, 255, 255, 0.3) 0px, 
+        rgba(255, 255, 255, 0.3) 1px, 
+        transparent 1px, 
+        transparent 3px);
+    mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+}
+.audio-block.red-block::after {
+    background-image: repeating-linear-gradient(90deg, 
+        rgba(255, 0, 0, 0.6) 0px, 
+        rgba(255, 0, 0, 0.6) 1px, 
+        transparent 1px, 
+        transparent 3px);
+}
+
+.block-label {
+    position: absolute;
+    top: 2px;
+    left: 5px;
+    font-size: 0.6rem;
+    color: #fff;
+    z-index: 2;
+    text-shadow: 1px 1px 2px #000;
+}
+
+.playhead {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--neon-red);
+    box-shadow: 0 0 5px var(--neon-red);
+    z-index: 10;
+    transition: left 0.1s linear; /* Smooth movement when reacting to JS interval */
+}
+
+.playhead::before {
+    content: '▼';
+    position: absolute;
+    top: -2px;
+    left: -4px;
+    color: var(--neon-red);
+    font-size: 0.8rem;
+}
+
+/* Transport Controls in Header */
+.transport-btn {
+    background: #222;
+    border: 1px solid #333;
+    color: #fff;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.transport-btn:hover {
+    background: #333;
+    border-color: #555;
+}
+
+.transport-btn.play-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+}
+
+.transport-btn.play-btn.active {
+    background: var(--neon-dark-red);
+    border-color: var(--neon-red);
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+}
+
+/* =========================================
+   Immersive Recording UI Styles
+   ========================================= */
+.studio-record-view {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.recording-controls-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #111;
+    padding: 15px 20px;
+    border-radius: 8px;
+    border: 1px solid #222;
+    margin-bottom: 30px;
+}
+
+.input-selector label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.immersive-recorder {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.record-btn-wrapper {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #222 0%, #111 100%);
+    border: 2px solid #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 2px 10px rgba(255,255,255,0.05);
+}
+
+.record-btn-wrapper:hover {
+    transform: scale(1.05);
+    border-color: var(--neon-dark-red);
+}
+
+.record-btn-inner {
+    font-size: 4rem;
+    transition: all 0.3s;
+}
+
+.pulse-active {
+    border-color: var(--neon-red);
+    box-shadow: 0 0 40px rgba(255, 0, 0, 0.4), inset 0 0 20px rgba(255, 0, 0, 0.2);
+    animation: breathingGlow 2s infinite alternate;
+}
+
+.pulse-active .record-btn-inner {
+    text-shadow: var(--glow-red);
+}
+
+@keyframes breathingGlow {
+    0% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.2), inset 0 0 10px rgba(255, 0, 0, 0.1); transform: scale(1); }
+    100% { box-shadow: 0 0 50px rgba(255, 0, 0, 0.6), inset 0 0 30px rgba(255, 0, 0, 0.3); transform: scale(1.05); }
+}
+
+.record-timer {
+    font-family: 'Outfit', sans-serif;
+    font-size: 4rem;
+    font-weight: 300;
+    margin: 30px 0 10px 0;
+    letter-spacing: 4px;
+}
+
+.status-text {
+    font-size: 1rem;
+    letter-spacing: 2px;
+}
+
+.live-visualizer {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 4px;
+    height: 80px;
+    width: 100%;
+    max-width: 500px;
+    margin: 40px auto;
+    opacity: 0.3;
+}
+
+.active-viz {
+    opacity: 1;
+}
+
+.viz-bar {
+    width: 12px;
+    background: linear-gradient(to top, var(--neon-dark-red), var(--neon-red));
+    border-radius: 2px;
+    height: 5px;
+    transition: height 0.1s ease;
+}
+
+.active-viz .viz-bar {
+    animation: eqBounce 1s infinite alternate;
+}
+
+.active-viz .viz-bar:nth-child(even) { animation-duration: 0.8s; animation-direction: alternate-reverse; }
+.active-viz .viz-bar:nth-child(3n) { animation-duration: 1.2s; }
+.active-viz .viz-bar:nth-child(4n) { animation-duration: 0.9s; animation-direction: alternate-reverse; }
+
+@keyframes eqBounce {
+    0% { height: 10%; }
+    100% { height: 100%; }
+}
+
+.take-status-banner {
+    background: rgba(255, 0, 0, 0.1);
+    color: var(--neon-red);
+    padding: 10px 20px;
+    border-radius: 4px;
+    border: 1px solid var(--neon-dark-red);
+    display: inline-block;
+}
+
+/* =========================================
+   Mixer Recovery Toolbar (Bottom Global)
+   ========================================= */
+.mixer-recovery-toolbar {
+    background: #0d0d0f;
+    border: 1px solid #1f1f22;
+    border-radius: 8px;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    box-shadow: inset 0 2px 5px rgba(255,255,255,0.02), 0 5px 15px rgba(0,0,0,0.5);
+}
+
+.mixer-recovery-toolbar .transport-group {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.mixer-recovery-toolbar .t-btn {
+    border: 1px solid #2a2a2c;
+    background: #151518;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.mixer-recovery-toolbar .t-btn:hover {
+    background: #222225;
+    border-color: #444;
+}
+
+.mixer-recovery-toolbar .btn-stop {
+    width: 38px; height: 38px; font-size: 0.9rem;
+}
+.mixer-recovery-toolbar .btn-play {
+    width: 48px; height: 48px; font-size: 1.2rem;
+    border-color: #444;
+}
+.mixer-recovery-toolbar .btn-record {
+    width: 38px; height: 38px; font-size: 0.9rem;
+}
+
+.mixer-recovery-toolbar .timer-display {
+    background: #000;
+    border: 1px solid #222;
+    border-radius: 4px;
+    padding: 6px 14px;
+    font-family: inherit;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: 1px;
+    margin-left: 10px;
+}
+
+.mixer-recovery-toolbar .btn-recovery {
+    background: linear-gradient(90deg, #d30000, #800000);
+    border: 1px solid #ff1a1a;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 1.5px;
+    padding: 10px 24px;
+    border-radius: 6px;
+    box-shadow: 0 0 15px rgba(211, 0, 0, 0.6), inset 0 1px 3px rgba(255,255,255,0.3);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+}
+.mixer-recovery-toolbar .btn-recovery:hover {
+    box-shadow: 0 0 25px rgba(255, 0, 0, 0.9), inset 0 1px 3px rgba(255,255,255,0.5);
+    background: linear-gradient(90deg, #f00000, #a00000);
+    transform: scale(1.02);
+}
+
+/* =========================================
+   Library Track Listing (Workspace Tab)
+   ========================================= */
+.track-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+    padding-bottom: 30px;
+}
+
+.track-row {
+    background: #0f0f12;
+    border: 1px solid #1f1f22;
+    padding: 15px 20px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s;
+}
+
+.track-row:hover {
+    background: #151518;
+    border-color: #333;
+    transform: translateX(5px);
+}
+
+.track-row > div:nth-child(2) {
+    flex-grow: 1;
+    margin-left: 20px;
+}
+
+.track-row .fake-waveform {
+    height: 40px;
+    width: 200px;
+    background: repeating-linear-gradient(
+      90deg,
+      #333,
+      #333 2px,
+      transparent 2px,
+      transparent 4px
+    );
+    opacity: 0.5;
+    margin: 0 20px;
+    border-radius: 4px;
+}
+
+.track-play-btn {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: #1a1a1c;
+    border: 1px solid #333;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.track-play-btn:hover {
+    background: #fff;
+    color: #000;
+    transform: scale(1.05);
+}
+
+.track-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.track-actions button {
+    background: #1a1a1c;
+    border: 1px solid #333;
+    color: #fff;
+    padding: 5px 12px;
+    font-size: 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.track-actions button:hover {
+    background: #2a2a2c;
+    border-color: #555;
+}
+
+/* =========================================
+   SXV WEB AUDIO API DAW - MODERN PREMIUM UI OVERRIDES
+   ========================================= */
+.daw-right-panel {
+    background: radial-gradient(circle at top right, #140d0d, #050505) !important;
+    border: 1px solid rgba(255, 30, 30, 0.15) !important;
+    border-radius: 12px !important;
+    box-shadow: inset 0 10px 40px rgba(0,0,0,0.8), 0 10px 30px rgba(255,0,0,0.05) !important;
+}
+
+.strip {
+    background: rgba(22, 18, 20, 0.6) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 2px 5px rgba(255,255,255,0.05) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.strip:hover {
+    border-color: rgba(255, 50, 50, 0.3) !important;
+    background: rgba(30, 22, 24, 0.75) !important;
+    box-shadow: 0 12px 40px rgba(255, 0, 0, 0.1) !important;
+    transform: translateY(-2px);
+}
+
+.knob-container {
+    background: radial-gradient(circle at top, #2a2a2a, #0a0a0a) !important;
+    border: 2px solid #111 !important;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.8), inset 0 2px 4px rgba(255,255,255,0.1) !important;
+}
+
+.knob-indicator {
+    background: #ff2a2a !important;
+    box-shadow: 0 0 8px #ff2a2a !important;
+}
+
+.fader-track {
+    background: #000 !important;
+    border: 1px solid rgba(255,255,255,0.05) !important;
+    box-shadow: inset 0 4px 10px rgba(0,0,0,0.9) !important;
+    border-radius: 10px !important;
+    width: 6px !important;
+}
+
+.meter-container {
+    background: #0b0b0b !important;
+    border: 1px solid #111 !important;
+    border-radius: 4px !important;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.8) !important;
+}
+
+.meter-level {
+    background: linear-gradient(to top, #00ff00, #ffff00, #ff0000) !important;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2) !important;
+}
+
+.daw-timeline {
+    background: repeating-linear-gradient(90deg, #08080a 0px, #08080a 19px, #121215 20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    box-shadow: inset 0 10px 40px rgba(0,0,0,0.9) !important;
+}
+
+/* =========================================
+   Spectrum Analyzer Bridge
+   ========================================= */
+.daw-analyzer-bridge.daw-panel {
+    display: flex;
+    gap: 4px;
+    height: 100px;
+    padding: 15px 20px 0 20px;
+    background: linear-gradient(180deg, #111 0%, #050505 100%);
+    border: 1px solid #222;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    align-items: flex-end;
+    justify-content: center;
+    box-shadow: inset 0 -10px 30px rgba(0,0,0,0.8), 0 5px 20px rgba(0,0,0,0.5);
+    position: relative;
+    overflow: hidden;
+}
+
+.daw-analyzer-bridge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 0, 0, 0.5), transparent);
+}
+
+.daw-analyzer-bridge .meter-bar {
+    flex: 1;
+    max-width: 30px;
+    height: 0%;
+    background: linear-gradient(to top, #004d00, #32cd32);
+    border-radius: 2px 2px 0 0;
+    border: 1px solid rgba(0,0,0,0.5);
+    border-bottom: none;
+    transition: height 0.01s linear;
+    box-shadow: 0 -2px 10px rgba(50, 205, 50, 0.2);
+}
+
+/* =========================================
+   Editor Layout
+   ========================================= */
+.editor-page-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    height: calc(100vh - 120px);
+}
+.editor-top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+}
+.editor-top-bar .transport-controls, .editor-top-bar .smart-buttons, .editor-top-bar .monitoring-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.editor-main-area {
+    display: flex;
+    flex: 1;
+    gap: 15px;
+    overflow: hidden;
+}
+.editor-side-panel {
+    width: 280px;
+    background: #080808;
+    border-right: 1px solid #222;
+    padding: 15px;
+    overflow-y: auto;
+}
+.t-btn, .btn-smart, .btn-sm {
+    background: linear-gradient(180deg, #2d2d30 0%, #1a1a1c 100%);
+    border: 1px solid #0a0a0a;
+    color: #ddd;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-family: inherit;
+    font-weight: 500;
+    transition: all 0.15s ease-out;
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.08), 0 2px 4px rgba(0,0,0,0.4);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.t-btn:hover, .btn-smart:hover, .btn-sm:hover {
+    background: linear-gradient(180deg, #353538 0%, #1e1e20 100%);
+    color: #fff;
+    border-color: #000;
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.12), 0 3px 6px rgba(0,0,0,0.6);
+}
+.t-btn:active, .btn-smart:active, .btn-sm:active {
+    background: #151515;
+    transform: translateY(1px);
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.8), 0 0 0 transparent;
+}
+.t-btn.active, .btn-smart.active, .btn-record.active {
+    background: linear-gradient(180deg, #2a0808 0%, #150000 100%);
+    color: var(--neon-red);
+    border-color: #000;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.9), 0 0 10px rgba(255, 0, 0, 0.2);
+    text-shadow: 0 0 8px rgba(255, 50, 50, 0.8);
+}
+
+.t-btn {
+    min-width: 44px;
+    height: 38px;
+    padding: 0 10px;
+}
+.btn-play {
+    color: #fff;
+}
+.btn-play.active {
+    color: #fff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    background: linear-gradient(180deg, #333 0%, #111 100%);
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.9), 0 0 10px rgba(255, 255, 255, 0.1);
+}
+.t-btn.btn-record {
+    color: #ff4d4d;
+}
+.t-btn.btn-record.active {
+    animation: flashRecord 1s infinite alternate;
+}
+@keyframes flashRecord {
+    0% { background: linear-gradient(180deg, #440000 0%, #220000 100%); color: #ff0000; text-shadow: 0 0 10px #ff0000; }
+    100% { background: linear-gradient(180deg, #660000 0%, #330000 100%); color: #ffcccc; text-shadow: 0 0 20px #ff0000, 0 0 30px #ff0000; }
+}
+.preset-dropdown {
+    background: #111;
+    color: #fff;
+    border: 1px solid #333;
+    padding: 8px;
+    border-radius: 4px;
+}

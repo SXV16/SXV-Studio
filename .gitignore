@@ -8,6 +8,8 @@
 
 # Node
 /node_modules
+/backend/node_modules
+/backend/.env
 npm-debug.log
 yarn-error.log
 
@@ -36,6 +38,11 @@ yarn-error.log
 /libpeerconnection.log
 testem.log
 /typings
+build.log
+test.webm
+/backend/database.sqlite
+/backend/uploads/
+/backend/out.json
 
 # System files
 .DS_Store

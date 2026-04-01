@@ -1,0 +1,752 @@
+<div class="daw-container">
+
+    <!-- LEFT SIDEBAR -->
+    <div class="daw-sidebar daw-panel">
+        <div class="nav-item" [class.active]="activeTab === 'library'" (click)="activeTab = 'library'">
+            <div class="nav-icon">🎵</div>
+            <div class="nav-label">Library</div>
+        </div>
+        <div class="nav-item" [class.active]="activeTab === 'record'" (click)="activeTab = 'record'; loadAudioDevices()">
+            <div class="nav-icon text-neon-red">🎙</div>
+            <div class="nav-label">Record</div>
+        </div>
+        <div class="nav-item" [class.active]="activeTab === 'mixer'" (click)="activeTab = 'mixer'">
+            <div class="nav-icon">🎚</div>
+            <div class="nav-label">Mixer</div>
+        </div>
+        <div class="nav-item" [class.active]="activeTab === 'editor'" (click)="activeTab = 'editor'">
+            <div class="nav-icon">✂️</div>
+            <div class="nav-label">Editor</div>
+        </div>
+        <div class="nav-item" [class.active]="activeTab === 'pro'" (click)="activeTab = 'pro'">
+            <div class="nav-icon text-neon-dark-red">☁️</div>
+            <div class="nav-label">Cloud</div>
+        </div>
+        <div class="nav-item mt-auto" style="margin-bottom: 20px;" [class.active]="activeTab === 'settings'" (click)="activeTab = 'settings'">
+            <div class="nav-icon">⚙️</div>
+            <div class="nav-label">Settings</div>
+        </div>
+    </div>
+
+
+    <!-- MAIN WORKSPACE -->
+    <div class="daw-workspace daw-panel" style="position: relative;">
+        <!-- GLOBAL LIBRARY DRAWER OVERLAY -->
+        <div *ngIf="showLibraryPanel" class="mixer-library-panel daw-panel" style="position: absolute; left: 20px; top: 20px; width: 300px; background: rgba(10,10,10,0.95); backdrop-filter: blur(10px); border: 1px solid #333; z-index: 9999; display: flex; flex-direction: column; box-shadow: 5px 0 25px rgba(0,0,0,0.9); height: calc(100% - 40px); border-radius: 8px;">
+            <div class="mixer-header" style="font-size: 1rem; padding: 15px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center;">
+                <span style="flex: 1; text-align: left; letter-spacing: 2px;">LIBRARY SOURCE</span>
+                <button class="btn btn-sm" style="background: transparent; border: none; color: #888; font-size: 1.2rem; cursor: pointer; padding: 0 10px;" (click)="showLibraryPanel = false">✕</button>
+            </div>
+            <div class="mixer-track-list" style="flex: 1; overflow-y: auto; padding: 10px;">
+                <div *ngIf="loading" class="text-center text-muted my-3">Loading Database...</div>
+                <div *ngIf="!loading && tracks.length === 0" class="text-center text-muted my-3" style="font-size: 0.8rem;">No Tracks Uploaded</div>
+                
+                <div *ngFor="let track of tracks" class="mixer-library-item" draggable="true" (dragstart)="onLibraryDragStart($event, track)" style="background: rgba(255,0,0,0.05); border: 1px solid #333; margin-bottom: 8px; padding: 10px; border-radius: 4px; transition: background 0.2s; cursor: grab;">
+                    <div style="color: #fff; font-size: 0.85rem; font-weight: bold; margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" [title]="track.title">{{ track.title }}</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: #888; font-size: 0.7rem;">{{ formatBytes(track.file_size || 0) }}</span>
+                        <button class="btn btn-sm" style="background: transparent; border: 1px solid var(--neon-red); color: var(--neon-red); font-size: 0.65rem; padding: 2px 8px; cursor: pointer;" (click)="addTrackToTimeline(track)">+ TIMELINE</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: Library View -->
+        <div *ngIf="activeTab === 'library'">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-right: 20px;">
+                <h2 class="workspace-title">Music Library</h2>
+                <div>
+                    <input type="file" accept="audio/*" #fileInput style="display: none" (change)="onFileUpload($event)">
+                    <button class="btn btn-secondary" style="border: 1px solid #333; background: #0f0f12; color: #fff; border-radius: 4px; padding: 6px 18px; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; letter-spacing: 1px;" onmouseover="this.style.background='#222'; this.style.color='var(--neon-red)';" onmouseout="this.style.background='#0f0f12'; this.style.color='#fff';" (click)="fileInput.click()">
+                        + UPLOAD AUDIO
+                    </button>
+                </div>
+            </div>
+            
+            <div *ngIf="loading" class="text-center mt-5">
+                <p>Loading tracks...</p>
+            </div>
+
+            <div *ngIf="!loading && tracks.length === 0" class="empty-state">
+                <p>No tracks found. Head to the Record tab to start.</p>
+            </div>
+
+            <div class="track-list" *ngIf="!loading && tracks.length > 0">
+                <div class="track-row" *ngFor="let track of tracks">
+                    <button class="track-play-btn" (click)="playTrack(track)" title="Play">
+                        {{ playingTrackId === track.id ? '⏸' : '▶' }}
+                    </button>
+                    <div>
+                        <div style="color: #fff; font-size: 0.9rem;">{{ track.title }}</div>
+                        <div style="color: #666; font-size: 0.7rem;">{{ track.created_at | date }}</div>
+                    </div>
+                    <div style="color: #888; font-size: 0.8rem; text-align: right; padding-right: 20px;">
+                        {{ formatBytes(track.file_size || 0) }}
+                    </div>
+                    <div class="fake-waveform" [style.opacity]="playingTrackId === track.id ? '1' : ''"></div>
+                    <div class="track-actions">
+                        <button (click)="editTrack(track)">Edit</button>
+                        <button (click)="downloadTrack(track)">↓</button>
+                        <button (click)="deleteTrack(track.id)" style="color: #ff4d4d;">✕</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Record View -->
+        <div *ngIf="activeTab === 'record'" class="studio-record-view">
+            <h2 class="workspace-title">Pro Recording Studio</h2>
+            
+            <div class="recording-controls-bar">
+                <div class="input-selector">
+                    <label>Input Source:</label>
+                    <button class="btn btn-sm btn-outline-secondary ml-2" style="background:transparent; border:1px solid #333; color:#aaa; margin-left:10px; padding:2px 8px; font-size: 0.7rem;" (click)="loadAudioDevices()">↻ Refresh</button>
+                    <select #deviceSelect class="form-control" style="width: auto; display: inline-block; margin-left: 10px; padding: 5px 10px;" (change)="selectedDeviceId = deviceSelect.value">
+                        <option *ngIf="audioDevices.length === 0" value="">Default Microphone</option>
+                        <option *ngFor="let device of audioDevices" [value]="device.deviceId" [selected]="device.deviceId === selectedDeviceId">
+                            {{ device.label || 'Microphone ' + (audioDevices.indexOf(device) + 1) }}
+                        </option>
+                    </select>
+                </div>
+                
+                <div class="metronome-toggle" style="display: flex; align-items: center; gap: 10px;">
+                    <button class="btn btn-secondary btn-sm" (click)="toggleMetronome()" [ngStyle]="{'color': isMetronomeOn ? 'var(--neon-red)' : ''}" style="transition: color 0.2s;">
+                        Metronome: {{ isMetronomeOn ? 'ON' : 'OFF' }}
+                    </button>
+                    
+                    <div style="display: flex; align-items: center; background: rgba(0,0,0,0.5); border: 1px solid #333; border-radius: 4px; overflow: hidden; height: 31px;">
+                        <button class="bpm-stepper-btn" (click)="bpm = bpm > 1 ? bpm - 1 : 1">-</button>
+                        <input type="number" [(ngModel)]="bpm" class="bpm-input" min="1" max="250">
+                        <button class="bpm-stepper-btn" (click)="bpm = bpm < 250 ? bpm + 1 : 250">+</button>
+                        <span style="color: #666; font-size: 0.7rem; padding: 0 6px 0 2px; border-left: 1px solid #222;">BPM</span>
+                    </div>
+
+                    <button class="btn btn-secondary btn-sm" (click)="toggleMonitor()" [ngStyle]="{'color': isMonitorOn ? 'var(--neon-crimson)' : ''}" style="transition: color 0.2s;">
+                        Monitor: {{ isMonitorOn ? 'ON' : 'OFF' }}
+                    </button>
+                    
+                    <audio #monitorAudio autoplay [muted]="!isMonitorOn" style="display: none;"></audio>
+                </div>
+            </div>
+
+            <div class="immersive-recorder text-center">
+                <div [class.pulse-active]="isRecording" class="record-btn-wrapper" (click)="toggleRecording()">
+                    <div class="record-btn-inner">🎙</div>
+                </div>
+                
+                <h2 class="record-timer" [class.text-neon-red]="isRecording">
+                    {{ isRecording ? formatTime(recordingTime) : '00:00' }}
+                </h2>
+                <p class="status-text text-muted">{{ isRecording ? 'RECORDING IN PROGRESS...' : 'STANDBY' }}</p>
+                
+                <!-- Immersive Waveform Visualizer -->
+                <div class="live-visualizer" [class.active-viz]="isRecording">
+                    <div class="viz-bar" *ngFor="let i of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]"></div>
+                </div>
+
+                <div class="take-actions mt-4" *ngIf="audioUrl">
+                    <audio #previewAudio [src]="audioUrl" 
+                           (loadedmetadata)="onPreviewLoadedMetadata($event)" 
+                           (ended)="isPreviewPlaying = false; isPreviewTracking = false"></audio>
+                           
+                    <div class="preview-playback-info" style="text-align: center; margin-bottom: 5px; font-family: monospace; font-size: 1.5rem; letter-spacing: 2px; font-weight: bold; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.8);">
+                        {{ formatPrecisionTime(previewCurrentTime) }} <span style="color: #666; font-size: 1.2rem; margin: 0 10px;">/</span> {{ formatPrecisionTime(previewDuration || recordingTime) }}
+                    </div>
+                    
+                    <!-- Sizzling Transport Controls for Preview -->
+                    <div class="custom-transport-controls" style="display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 20px; margin: 10px 0 20px 0;">
+                        <button class="transport-btn play-btn" 
+                                [class.active]="isPreviewPlaying" 
+                                style="width: 80px; height: 80px; font-size: 2.5rem; border-color: #444; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);"
+                                (click)="togglePreviewReview(previewAudio)" 
+                                title="Play/Pause">
+                            <span *ngIf="!isPreviewPlaying" style="margin-left: 5px;">▶</span>
+                            <span *ngIf="isPreviewPlaying">⏸</span>
+                        </button>
+                        <button class="transport-btn stop-btn" 
+                                style="width: 60px; height: 60px; font-size: 1.8rem; border-color: #666;"
+                                (click)="stopPreviewReview(previewAudio)" 
+                                title="Stop">
+                            ⏹
+                        </button>
+                    </div>
+
+                    <div class="take-status-banner">Capture successful. Preview or save to library.</div>
+                    
+                    <div class="action-buttons-group mt-3">
+                        <button class="btn btn-primary btn-lg" (click)="saveTrack()">Save to Multitrack</button>
+                        <button class="btn btn-secondary btn-lg ml-3" style="margin-left: 15px;" (click)="discardTake()">Discard Take</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Pro / Cloud View -->
+        <div *ngIf="activeTab === 'pro'">
+            <h2 class="workspace-title">Cloud Services & Upgrades</h2>
+            <!-- Pro Container content omitted for brevity -->
+            <div class="pro-container" style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                <div class="plan-card" style="flex: 1; max-width: 300px;">
+                    <h3 class="text-muted">Basic Tier</h3>
+                    <div class="plan-price">Free</div>
+                    <ul class="plan-features text-muted">
+                        <li>50MB Storage Limit</li>
+                        <li>Local Storage</li>
+                        <li>5 Demo Tracks</li>
+                        <li>Basic EQ</li>
+                    </ul>
+                    <button class="btn btn-secondary w-100" disabled *ngIf="!currentUser || currentUser.tier === 'Basic'">Current Plan</button>
+                    <button class="btn btn-secondary w-100" disabled *ngIf="currentUser && currentUser.tier !== 'Basic'">Included</button>
+                </div>
+                
+                <div class="plan-card" style="flex: 1; max-width: 300px; border: 1px solid var(--neon-crimson); position: relative;">
+                    <h3 class="text-neon-red">DJ Tier</h3>
+                    <div class="plan-price text-neon-red">$2.99<span style="font-size: 1rem; color: #888;">/mo</span></div>
+                    <ul class="plan-features">
+                        <li>500MB Cloud Storage</li>
+                        <li>Advanced Multi-track Mixing</li>
+                        <li>VST Plugin Support</li>
+                    </ul>
+                    <button class="btn btn-secondary w-100" (click)="upgradeTier('DJ')" *ngIf="currentUser?.tier !== 'DJ' && currentUser?.tier !== 'Pro DJ'">Upgrade Now</button>
+                    <button class="btn btn-secondary w-100" disabled *ngIf="currentUser?.tier === 'DJ'">Current Plan</button>
+                    <button class="btn btn-secondary w-100" disabled *ngIf="currentUser?.tier === 'Pro DJ'">Included</button>
+                </div>
+
+                <div class="plan-card pro-active" style="flex: 1; max-width: 300px; position: relative;">
+                    <div style="position: absolute; top: -10px; right: 20px; background: var(--neon-red); color: #fff; padding: 2px 10px; font-size: 0.7rem; font-weight: bold; border-radius: 10px;">POPULAR</div>
+                    <h3 class="text-neon-dark-red">Pro DJ Tier</h3>
+                    <div class="plan-price text-neon-red">$9.99<span style="font-size: 1rem; color: #888;">/mo</span></div>
+                    <ul class="plan-features">
+                        <li>Unlimited Cloud Storage</li>
+                        <li>Advanced Multi-track Mixing</li>
+                        <li>VST Plugin Support</li>
+                        <li><strong style="color:var(--neon-red)">Mastering AI & Chatbot</strong></li>
+                    </ul>
+                    <button class="btn btn-primary w-100" (click)="upgradeTier('Pro DJ')" *ngIf="currentUser?.tier !== 'Pro DJ'">Upgrade Now</button>
+                    <button class="btn btn-primary w-100" disabled *ngIf="currentUser?.tier === 'Pro DJ'">Current Plan</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Settings View -->
+        <div *ngIf="activeTab === 'settings'" class="settings-container" style="padding: 10px 30px; max-width: 1000px; margin: 0 auto;">
+            <h2 class="workspace-title text-center" style="margin-bottom: 40px;">Global Preferences</h2>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                
+                <!-- AUDIO ENGINE -->
+                <div class="settings-card" style="background: rgba(20,20,25,0.8); border: 1px solid #333; padding: 25px; border-radius: 8px;">
+                    <h4 class="text-neon-red" style="margin-top: 0; border-bottom: 1px solid #222; padding-bottom: 15px; letter-spacing: 2px;">⚡ AUDIO ENGINE</h4>
+                    
+                    <div style="margin-top: 20px;">
+                        <label style="color: #aaa; font-size: 0.8rem; font-weight: bold; display: block; margin-bottom: 8px;">INPUT DEVICE</label>
+                        <div style="display: flex; gap: 10px;">
+                            <select class="form-control" [(ngModel)]="selectedDeviceId" style="background: #0f0f15; border: 1px solid #333; color: #fff; width: 100%;">
+                                <option *ngIf="audioDevices.length === 0" value="">Default Microphone</option>
+                                <option *ngFor="let device of audioDevices" [value]="device.deviceId">{{ device.label || 'Microphone ' + (audioDevices.indexOf(device) + 1) }}</option>
+                            </select>
+                            <button class="btn btn-secondary" (click)="loadAudioDevices()" style="background: #222; border: 1px solid #444;" title="Rescan Audio Hardware">↻</button>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div>
+                            <label style="color: #aaa; font-size: 0.8rem; font-weight: bold; display: block; margin-bottom: 8px;">SAMPLE RATE</label>
+                            <select class="form-control" [(ngModel)]="activeSampleRate" style="background: #0f0f15; border: 1px solid #333; color: #fff; width: 100%;">
+                                <option value="44100">44.1 kHz</option>
+                                <option value="48000">48.0 kHz</option>
+                                <option value="96000">96.0 kHz</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="color: #aaa; font-size: 0.8rem; font-weight: bold; display: block; margin-bottom: 8px;">BUFFER SIZE</label>
+                            <select class="form-control" [(ngModel)]="activeBufferSize" style="background: #0f0f15; border: 1px solid #333; color: #fff; width: 100%;">
+                                <option value="128">128 Samples (Low Latency)</option>
+                                <option value="256">256 Samples</option>
+                                <option value="512">512 Samples</option>
+                                <option value="1024">1024 Samples (Safe)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ENVIRONMENT -->
+                <div class="settings-card" style="background: rgba(20,20,25,0.8); border: 1px solid #333; padding: 25px; border-radius: 8px;">
+                    <h4 class="text-neon-red" style="margin-top: 0; border-bottom: 1px solid #222; padding-bottom: 15px; letter-spacing: 2px;">🎨 WORKSPACE ENVIRONMENT</h4>
+                    
+                    <div style="margin-top: 20px;">
+                        <label style="color: #aaa; font-size: 0.8rem; font-weight: bold; display: block; margin-bottom: 8px;">APP THEME</label>
+                        <div style="display: flex; background: #0f0f15; border: 1px solid #333; border-radius: 6px; padding: 5px; gap: 5px;">
+                            <button class="btn" style="flex: 1; transition: all 0.3s; font-weight: bold;" [ngStyle]="{'background': themeSelection === 'dark' ? 'var(--neon-crimson)' : 'transparent', 'color': themeSelection === 'dark' ? '#fff' : '#888'}" (click)="setTheme('dark')">🌙 Cinematic Dark</button>
+                            <button class="btn" style="flex: 1; transition: all 0.3s; font-weight: bold;" [ngStyle]="{'background': themeSelection === 'light' ? '#fff' : 'transparent', 'color': themeSelection === 'light' ? '#000' : '#888'}" (click)="setTheme('light')">☀️ Studio Light</button>
+                        </div>
+                        <p class="text-muted" style="font-size: 0.75rem; margin-top: 10px; font-style: italic;">Changes instantly apply globally across all Editor modules and Master buses.</p>
+                    </div>
+                </div>
+
+                <!-- STORAGE & CACHE -->
+                <div class="settings-card" style="background: rgba(20,20,25,0.8); border: 1px solid #333; padding: 25px; border-radius: 8px;">
+                    <h4 class="text-neon-red" style="margin-top: 0; border-bottom: 1px solid #222; padding-bottom: 15px; letter-spacing: 2px;">💾 DATA ALLOCATION</h4>
+                    
+                    <div style="margin-top: 20px; text-align: center;">
+                        <div style="font-size: 2rem; font-weight: bold; color: #fff; margin-bottom: 5px;">{{ storageUsed }}</div>
+                        <div class="text-muted" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">Current Active Snapshot</div>
+                        
+                        <div style="width: 100%; height: 6px; background: #222; border-radius: 3px; margin: 20px 0; overflow: hidden;">
+                            <div style="height: 100%; background: var(--neon-red);" [style.width.%]="storagePercentage"></div>
+                        </div>
+
+                        <button class="btn btn-secondary w-100" style="background: #111; border: 1px solid #ff3333; color: #ff3333; font-weight: bold; padding: 12px; transition: all 0.2s;" onmouseover="this.style.background='#ff3333'; this.style.color='#fff';" onmouseout="this.style.background='#111'; this.style.color='#ff3333';" (click)="clearLocalCache()">
+                            PURGE LOCAL BROWSER CACHE
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ACCOUNT & BILLING -->
+                <div class="settings-card" style="background: rgba(20,20,25,0.8); border: 1px solid #333; padding: 25px; border-radius: 8px; position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: rgba(255,0,0,0.05); border-radius: 50%; pointer-events: none;"></div>
+                    <h4 class="text-neon-red" style="margin-top: 0; border-bottom: 1px solid #222; padding-bottom: 15px; letter-spacing: 2px;">👤 ACCOUNT & ACCESS</h4>
+                    
+                    <div style="margin-top: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <span style="color: #aaa; font-weight: bold;">Connected Identity:</span>
+                            <span style="color: #fff; font-size: 1.1rem; font-weight: bold;">{{ currentUser?.username || 'Guest' }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                            <span style="color: #aaa; font-weight: bold;">Licensed Tier:</span>
+                            <span style="background: var(--neon-dark-red); color: #fff; padding: 3px 10px; border-radius: 4px; font-weight: bold; font-size: 0.8rem; letter-spacing: 1px;">{{ currentUser?.tier || 'Basic' }}</span>
+                        </div>
+
+                        <div style="display: flex; gap: 15px;">
+                            <button class="btn btn-primary" style="flex: 1;" (click)="activeTab = 'pro'" *ngIf="currentUser?.tier !== 'Pro DJ'">UPGRADE LICENSE</button>
+                            <button class="btn btn-secondary" style="flex: 1; border: 1px solid #444; background: transparent; color: #fff;" routerLink="/profile">EDIT PROFILE</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Tab: Editor View -->
+        <div *ngIf="activeTab === 'editor'" class="editor-page-layout" style="display: flex; flex-direction: column; gap: 15px; height: 100%; min-height: calc(100vh - 120px); overflow-y: auto; padding-right: 5px;">
+            <!-- TOP BAR (Transport & Smart Controls) -->
+            <div class="editor-top-bar daw-panel" style="flex-shrink: 0;">
+                 <div class="transport-controls">
+                     <button class="t-btn" (click)="mockAction('Rewind')">◀◀</button>
+                     <button class="t-btn btn-play" [class.active]="isPlaying" (click)="isPlaying ? pauseTimeline() : playTimeline()">{{ isPlaying ? '⏸' : '▶' }}</button>
+                     <button class="t-btn btn-stop" (click)="stopTimeline()">■</button>
+                     <button class="t-btn" (click)="mockAction('Fast Forward')">▶▶</button>
+                     <button class="t-btn btn-record" [class.active]="isRecording" (click)="toggleRecording()">●</button>
+                     <button class="t-btn btn-loop" [class.active]="isLooping" (click)="isLooping = !isLooping">🔁</button>
+                     <div class="timer-display">{{ formatPlaybackTime(currentPlayTime) | slice:0:7 }}</div>
+                 </div>
+                 
+                 <div class="smart-buttons">
+                     <button class="btn-smart" (click)="applySmartMix()">🪄 Auto Mix</button>
+                     <button class="btn-smart" (click)="enhanceVoice()">🗣 Enhance Voice</button>
+                     <button class="btn-smart" (click)="removeNoise()">🧹 Remove Noise</button>
+                     <button class="btn-smart btn-pitch text-neon-dark-red" (click)="fixPitch()">🎵 Fix Pitch</button>
+                     <select class="preset-dropdown">
+                         <option>Default Preset</option>
+                         <option>Trap Vocal</option>
+                         <option>Podcast</option>
+                         <option>Acoustic Live</option>
+                     </select>
+                 </div>
+                 
+                 <div class="monitoring-controls">
+                     <button class="btn-sm" [class.on]="isMonitorOn" (click)="toggleMonitor()" [style.color]="isMonitorOn ? 'var(--neon-crimson)' : '#888'">🎧 Monitor</button>
+                     <div class="latency-indicator green-dot">5ms Latency</div>
+                 </div>
+            </div>
+
+            <!-- EQUIPMENT AREA (Top) -->
+            <div class="editor-equipment-area" style="display: flex; flex-direction: column; gap: 15px; flex-shrink: 0;">
+                
+                <div style="display: flex; gap: 15px;">
+                    <!-- LEFT: PRO MIXER CHANNEL STRIP (Dynamic) -->
+                    <div class="editor-side-panel daw-panel channel-strip-panel" style="width: 280px; flex-shrink: 0; min-height: 400px;">
+                        <h3 class="panel-header" style="text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 0;">CHANNEL STRIP</h3>
+                        
+                        <div style="padding: 10px; border-bottom: 1px solid #222; margin-bottom: 10px; text-align: center;">
+                            <select class="form-control" style="background: #111; color: var(--neon-red); border: 1px solid #333; font-weight: bold; width: 100%; text-align: center; padding: 5px; outline: none; appearance: auto;" (change)="onEditorTrackSelected($event)">
+                                <option value="">Select a track...</option>
+                                <option *ngFor="let trk of editorTracks" [value]="trk.id" [selected]="selectedEditorTrack?.id === trk.id">{{ trk.name }}</option>
+                            </select>
+                        </div>
+
+                        <div class="strip-controls" *ngIf="selectedEditorTrack">
+                            
+                            <div style="display: flex; justify-content: space-around; margin-bottom: 20px;">
+                                <div class="knob-group" style="text-align: center;">
+                                    <label style="font-size: 0.7rem; color: #888;">GAIN</label>
+                                    <div class="knob-container" style="position: relative; margin: 0 auto; width: 40px; height: 40px; border-radius: 50%; background: #222; border: 2px solid #555;">
+                                        <div class="knob-indicator" [style.transform]="'rotate(' + (selectedEditorTrack.volume - 50) + 'deg)'" style="position: absolute; top: 0; left: 50%; width: 2px; height: 50%; background: var(--neon-red); transform-origin: bottom center;"></div>
+                                        <input type="range" min="0" max="100" [(ngModel)]="selectedEditorTrack.volume" (input)="updateTrackVolume(selectedEditorTrack)" style="position: absolute; top:0; left:0; width: 100%; height: 100%; opacity: 0; cursor: ew-resize; z-index: 10;">
+                                    </div>
+                                </div>
+                                
+                                <div class="knob-group" style="text-align: center;">
+                                    <label style="font-size: 0.7rem; color: #888;">PAN</label>
+                                    <div class="knob-container" style="position: relative; margin: 0 auto; width: 40px; height: 40px; border-radius: 50%; background: #222; border: 2px solid #555;">
+                                        <div class="knob-indicator" [style.transform]="'rotate(' + (selectedEditorTrack.pan * 1.5) + 'deg)'" style="position: absolute; top: 0; left: 50%; width: 2px; height: 50%; background: var(--neon-red); transform-origin: bottom center;"></div>
+                                        <input type="range" min="-50" max="50" [(ngModel)]="selectedEditorTrack.pan" (input)="updateTrackPan(selectedEditorTrack)" style="position: absolute; top:0; left:0; width: 100%; height: 100%; opacity: 0; cursor: ew-resize; z-index: 10;">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="strip-toggles" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+                                <button class="strip-btn" [class.muted]="selectedEditorTrack.isMuted" [style.color]="selectedEditorTrack.isMuted ? '#f00' : '#666'" (click)="toggleMute(selectedEditorTrack)" style="background: #111; border: 1px solid #333; padding: 10px;">MUTE</button>
+                                <button class="strip-btn" [class.solo-active]="selectedEditorTrack.isSoloed" [style.color]="selectedEditorTrack.isSoloed ? '#f90' : '#666'" (click)="toggleSolo(selectedEditorTrack)" style="background: #111; border: 1px solid #333; padding: 10px;">SOLO</button>
+                                <button class="strip-btn rec-arm" (click)="armTrack(selectedEditorTrack)" style="background: #111; border: 1px solid #333; padding: 10px;" [style.color]="selectedEditorTrack.isRecording ? 'red' : '#666'">RECORD</button>
+                                <button class="strip-btn phase-inv" (click)="togglePhase(selectedEditorTrack)" style="background: #111; border: 1px solid #333; padding: 10px; color: #666;">PHASE(Ø)</button>
+                            </div>
+
+                            <div class="fader-container huge-fader" style="height: 200px; position: relative; display: flex; justify-content: center;">
+                                <div class="fader-track" style="position: absolute; width: 6px; height: 100%; background: #111; border-radius: 3px; border: 1px solid #222;"></div>
+                                <input type="range" orient="vertical" min="0" max="100" [(ngModel)]="selectedEditorTrack.volume" (input)="updateTrackVolume(selectedEditorTrack)" style="position: absolute; -webkit-appearance: slider-vertical; appearance: auto; width: 20px; height: 100%; z-index: 5;">
+                                <div class="meter-container" style="position: absolute; right: 20%; width: 10px; height: 100%; background: #000; border-radius: 2px; overflow: hidden;"><div class="meter-level" [style.height.%]="selectedEditorTrack.volume" style="background: linear-gradient(to top, #0f0, #ff0, #f00); width: 100%; position: absolute; bottom: 0; transition: height 0.1s;"></div></div>
+                            </div>
+                        </div>
+                        <div class="no-selection" *ngIf="!selectedEditorTrack" style="text-align: center; color: #666; font-style: italic; margin-top: 50px;">Please select a track above...</div>
+                    </div>
+
+                    <!-- RIGHT: DSP RACK (Effects & Dynamics) -->
+                    <div class="editor-right-panel daw-panel fx-rack" style="flex: 1; overflow-y: auto; background: #0a0a0a; border-left: 1px solid #222; padding: 15px; min-height: 400px;">
+                        <h3 class="panel-header" style="text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 0;">DSP RACK</h3>
+                        <div class="fx-section" *ngIf="selectedEditorTrack">
+                            
+                            <!-- DYNAMICS -->
+                            <div class="fx-module dynamics-module" style="background: #111; padding: 15px; border-radius: 6px; border: 1px solid #222; margin-bottom: 20px;">
+                                <h4 style="margin-top: 0; color: #aaa; font-size: 0.8rem; letter-spacing: 1px; border-bottom: 1px solid #333; padding-bottom: 5px;">DYNAMICS (SSL)</h4>
+                                <div class="dsp-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                    <div class="dsp-param"><label style="font-size:0.6rem;color:#888;">COMPRESSOR</label><input type="range" min="0" max="100" [(ngModel)]="selectedEditorTrack.compression" (input)="updateFx(selectedEditorTrack)" style="width:100%; accent-color: var(--neon-red);"></div>
+                                    <div class="dsp-param"><label style="font-size:0.6rem;color:#888;">LIMITER</label><div><input type="checkbox" checked> <span style="font-size:0.7rem;">ON</span></div></div>
+                                    <div class="dsp-param"><label style="font-size:0.6rem;color:#888;">DE-ESSER</label><input type="range" class="rotary" style="width:100%;"></div>
+                                    <div class="dsp-param"><label style="font-size:0.6rem;color:#888;">NOISE GATE</label><input type="range" class="rotary" style="width:100%;"></div>
+                                </div>
+                            </div>
+
+                            <!-- EQ SECTION -->
+                            <div class="fx-module eq-module" style="background: #111; padding: 15px; border-radius: 6px; border: 1px solid #222; margin-bottom: 20px;">
+                                <h4 style="margin-top: 0; color: #aaa; font-size: 0.8rem; letter-spacing: 1px; border-bottom: 1px solid #333; padding-bottom: 5px;">PARAMETRIC EQ</h4>
+                                <div class="eq-visualizer" style="height: 60px; background: #050505; border: 1px solid #333; border-radius: 4px; margin-bottom: 15px; position: relative; overflow: hidden;">
+                                    <!-- MOCK EQ CURVE -->
+                                    <svg width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 100 100">
+                                        <path d="M0,80 Q25,30 50,50 T100,20 L100,100 L0,100 Z" fill="rgba(255,0,0,0.1)" stroke="var(--neon-red)" stroke-width="2"/>
+                                    </svg>
+                                </div>
+                                <div class="dsp-grid" style="display: flex; gap: 5px; justify-content: space-between;">
+                                    <div class="dsp-param" style="text-align:center;"><label style="font-size:0.6rem;color:#888;">LOW</label><input type="range" orient="vertical" min="-40" max="40" [(ngModel)]="selectedEditorTrack.eq.low" (input)="updateFx(selectedEditorTrack)" style="-webkit-appearance: slider-vertical; appearance: auto; height: 60px; width: 15px;"></div>
+                                    <div class="dsp-param" style="text-align:center;"><label style="font-size:0.6rem;color:#888;">MID</label><input type="range" orient="vertical" min="-40" max="40" [(ngModel)]="selectedEditorTrack.eq.mid" (input)="updateFx(selectedEditorTrack)" style="-webkit-appearance: slider-vertical; appearance: auto; height: 60px; width: 15px;"></div>
+                                    <div class="dsp-param" style="text-align:center;"><label style="font-size:0.6rem;color:#888;">HIGH</label><input type="range" orient="vertical" min="-40" max="40" [(ngModel)]="selectedEditorTrack.eq.high" (input)="updateFx(selectedEditorTrack)" style="-webkit-appearance: slider-vertical; appearance: auto; height: 60px; width: 15px;"></div>
+                                </div>
+                            </div>
+
+                            <!-- EFFECTS & ROUTING -->
+                            <div class="fx-module routing-module" style="background: #111; padding: 15px; border-radius: 6px; border: 1px solid #222;">
+                                <h4 style="margin-top: 0; color: #aaa; font-size: 0.8rem; letter-spacing: 1px; border-bottom: 1px solid #333; padding-bottom: 5px;">TIME & SPACE</h4>
+                                <div class="dsp-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                    <div class="dsp-param"><label style="font-size:0.6rem;color:var(--neon-red);">REVERB</label><input type="range" min="0" max="100" [(ngModel)]="selectedEditorTrack.reverbMix" (input)="updateFx(selectedEditorTrack)" style="width:100%; accent-color: var(--neon-red);"></div>
+                                    <div class="dsp-param"><label style="font-size:0.6rem;color:var(--neon-red);">DELAY</label><input type="range" min="0" max="100" [(ngModel)]="selectedEditorTrack.delayMix" (input)="updateFx(selectedEditorTrack)" style="width:100%; accent-color: var(--neon-red);"></div>
+                                    <div class="dsp-param"><label style="font-size:0.6rem;color:#888;">CHORUS</label><button class="btn btn-sm" style="width:100%; background:#222; border:1px solid #444; color:#aaa; font-size:0.7rem;">Off</button></div>
+                                    <div class="dsp-param"><label style="font-size:0.6rem;color:#888;">SATURATE</label><button class="btn btn-sm" style="width:100%; background:#222; border:1px solid #444; color:#aaa; font-size:0.7rem;">Off</button></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="no-selection" *ngIf="!selectedEditorTrack" style="text-align: center; color: #666; font-style: italic; margin-top: 50px;">DSP controls deactivated. Please select a track from the Channel Strip.</div>
+                    </div>
+                </div>
+
+                <!-- BOTTOM: MASTER CHANNEL -->
+                <div class="editor-master-panel daw-panel" style="padding: 10px 20px; background: #0a0a0a; border-top: 1px solid #222; display: flex; align-items: center; justify-content: space-between;">
+                    <div class="master-strip" style="display: flex; align-items: center; gap: 40px; width: 100%;">
+                        <div class="strip-label text-neon-red" style="font-weight: bold; font-size: 1.2rem; min-width: 150px; border-right: 1px solid #333; padding-right: 20px;">MASTER BUS</div>
+                        
+                        <div class="knob-group" style="text-align: center;">
+                            <label style="font-size: 0.7rem; color: #888;">WIDTH</label>
+                            <input type="range" style="width: 80px;">
+                        </div>
+                        
+                        <div class="knob-group" style="text-align: center;">
+                            <label style="font-size: 0.7rem; color: #888;">M-EQ</label>
+                            <input type="range" style="width: 80px;">
+                        </div>
+                        
+                        <button class="strip-btn btn-limiter" style="background: #220000; border: 1px solid var(--neon-red); color: var(--neon-red); padding: 5px 15px; border-radius: 4px; font-weight: bold;">L3 MULTIMAXIMIZER: ON</button>
+                        
+                        <div class="fader-container master-fader-container" style="display: flex; align-items: center; gap: 15px; margin-left: auto;">
+                            <input type="range" min="0" max="100" value="95" style="width: 200px; accent-color: var(--neon-red);">
+                            <div class="stereo-meter" style="display: flex; gap: 2px; width: 40px; height: 20px; background: #111; border: 1px solid #333; padding: 2px;">
+                                <div class="meter-level L" style="width: 50%; height: 95%; background: var(--neon-red);"></div>
+                                <div class="meter-level R" style="width: 50%; height: 92%; background: var(--neon-red);"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TIMELINE / EDITING AREA -->
+            <div class="editor-center-panel daw-panel" style="flex: 1; display: flex; flex-direction: column; overflow: hidden; min-height: 400px; margin-bottom: 20px;">
+                <div class="editing-tools-bar" style="display: flex; gap: 15px; padding: 10px; border-bottom: 1px solid #222; background: #0a0a0a; align-items: center; flex-shrink: 0;">
+                    <button class="tool-btn btn btn-sm" title="Cut/Trim" style="background: transparent; border: 1px solid #444; color: #fff;">✂️ Trim</button>
+                    <button class="tool-btn btn btn-sm" title="Split" style="background: transparent; border: 1px solid #444; color: #fff;">📍 Split</button>
+                    <button class="tool-btn btn btn-sm" title="Fade" style="background: transparent; border: 1px solid #444; color: #fff;">📈 Fade</button>
+                    <button class="tool-btn btn btn-sm" title="Time Stretch" style="background: transparent; border: 1px solid #444; color: #fff;">⏱ Stretch</button>
+                    <div class="snap-grid" style="margin-left: auto; color: #aaa; font-size: 0.8rem;">
+                        Snap: <select style="background: #111; border: 1px solid #333; color: #fff; padding: 2px 5px;"><option>Grid (BPM)</option><option>Off</option></select>
+                    </div>
+                    <div class="automation-toggle">
+                        <button class="btn btn-sm" (click)="showAutomation = !showAutomation" [style.background]="showAutomation ? 'var(--neon-red)' : 'transparent'" style="border: 1px solid #444; color: #fff;">Automate</button>
+                    </div>
+                    <button class="btn btn-sm ab-compare" title="A/B Compare" style="background: transparent; border: 1px solid var(--neon-dark-red); color: var(--neon-red);">A / B</button>
+                    
+                    <!-- Library Drop Toggle -->
+                    <button class="btn btn-sm" style="background: #111; border: 1px solid var(--neon-red); color: var(--neon-red); font-weight: bold; padding: 5px 15px; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; margin-left: auto; box-shadow: 0 0 10px rgba(0,0,0,0.5);" (click)="showLibraryPanel = !showLibraryPanel">
+                        <span>☰</span> OPEN LIBRARY
+                    </button>
+                    <!-- Save Audio Button -->
+                    <button class="btn btn-sm" style="background: var(--neon-red); border: 1px solid var(--neon-dark-red); color: #fff; font-weight: bold; padding: 5px 15px; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; box-shadow: 0 0 10px rgba(255,0,0,0.3);" (click)="exportProject()">
+                        <span>💾</span> SAVE AUDIO
+                    </button>
+                </div>
+
+                <div class="editor-timeline-wrapper" style="flex: 1; overflow-y: auto; overflow-x: auto; background: #0d0d0f; padding-top: 10px; position:relative;">
+                    
+                    <div style="display: flex; min-width: 100%;">
+                        <!-- Left Track Headers -->
+                        <div class="editor-timeline-headers" style="width: 100px; flex-shrink: 0; background: #0a0a0a; border-right: 1px solid #333; padding-top: 25px;">
+                            <div *ngFor="let trk of editorTracks" 
+                                 [class.selected-row]="selectedEditorTrack === trk"
+                                 (click)="selectedEditorTrack = trk"
+                                 style="height: 80px; margin-bottom: 5px; display: flex; align-items: center; justify-content: center; background: #111; color: #aaa; font-weight: bold; font-size: 0.8rem; border-left: 4px solid transparent; cursor: pointer; transition: border 0.2s;"
+                                 [style.border-left-color]="selectedEditorTrack === trk ? 'var(--neon-red)' : 'transparent'">
+                                {{ trk.name }}
+                            </div>
+                        </div>
+
+                        <!-- Right Timeline Area -->
+                        <div [style.min-width.px]="timelineTotalWidthPx" style="position: relative; padding-bottom: 20px; flex: 1;">
+                            <div class="timeline-ruler" [style.width.px]="timelineTotalWidthPx" style="height: 25px; border-bottom: 1px solid #333; position: relative;">
+                                <ng-container *ngFor="let marker of timeMarkers">
+                                    <span class="time-marker" [style.position]="'absolute'" [style.left.px]="marker.offsetPx" style="transform: translateX(-50%); font-size: 0.65rem; color: #666; font-weight: bold; pointer-events: none;">{{ marker.label }}</span>
+                                </ng-container>
+                            </div>
+                            
+                            <div class="timeline-tracks" style="position: relative;">
+                                <div class="playhead" (mousedown)="onPlayheadMouseDown($event)" style="cursor: ew-resize;" [style.left.px]="(currentPlayTime * pixelsPerSecond)" style="position: absolute; top: 0; bottom: 0; width: 2px; background: red; z-index: 100; pointer-events: auto;"></div>
+                                
+                                <div class="timeline-row editor-row" *ngFor="let trk of editorTracks" 
+                                     (dragover)="onTimelineDragOver($event)" (drop)="onTimelineDrop($event, trk)"
+                                     [class.selected-row]="selectedEditorTrack === trk"
+                                     (click)="selectedEditorTrack = trk"
+                                     [style.width.px]="timelineTotalWidthPx"
+                                     style="height: 80px; margin-bottom: 5px; background: rgba(0,0,0,0.5); border: 1px solid #222; border-left: 4px solid transparent; position: relative; transition: border 0.2s;"
+                                     [style.border-left-color]="selectedEditorTrack === trk ? 'var(--neon-red)' : 'transparent'">
+
+                                    <!-- Track Clips -->
+                                    <div *ngFor="let clip of trk.clips" class="audio-block" [ngClass]="clip.isRecording ? 'red-block' : 'gray-block'" 
+                                         (mousedown)="onClipMouseDown($event, clip, trk)"
+                                         (contextmenu)="onClipContextMenu($event, clip, trk)"
+                                         [style.left.px]="clip.startPx" [style.width.px]="clip.widthPx"
+                                         style="position: absolute; top: 10px; height: 60px; background: rgba(0,0,0,0.8); border-radius: 4px; overflow: hidden; border: 1px solid #444; cursor: grab;">
+                                        <app-waveform *ngIf="clip.buffer" [buffer]="clip.buffer" [widthPx]="clip.widthPx" [color]="clip.isRecording ? '#ff4040' : '#88ccff'" style="width:100%; height:100%; position:absolute; top:0; left:0; pointer-events: none;"></app-waveform>
+                                        <div class="clip-title" style="position: absolute; top: 2px; left: 5px; font-size: 0.7rem; color: #fff; background: rgba(0,0,0,0.6); padding: 2px 4px; border-radius: 2px; pointer-events: none;">{{ clip.title }}</div>
+                                    </div>
+                                    
+                                    <div *ngIf="showAutomation" class="automation-lane" style="position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: rgba(255,0,0,0.3);">
+                                        <div style="position: absolute; top: -4px; left: 100px; width: 8px; height: 8px; border-radius: 50%; background: var(--neon-red);"></div>
+                                        <div style="position: absolute; top: 10px; left: 300px; width: 8px; height: 8px; border-radius: 50%; background: var(--neon-red);"></div>
+                                        <svg style="position: absolute; top: -50px; left: 0; width: 100%; height: 50px; pointer-events: none;"><line x1="104" y1="46" x2="304" y2="60" stroke="#ff0000" stroke-width="1"/></svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Mixer View -->
+        <div *ngIf="activeTab === 'mixer'" class="mixer-page-layout" style="display: flex; flex-direction: column; gap: 20px; position: relative; padding-bottom: 40px; min-height: 100vh;">
+            
+            <div class="mixer-panels-wrapper" style="display: flex; flex-direction: column; gap: 20px; flex: 1; position: relative;">
+                
+                <div style="padding: 10px 0; text-align: left; z-index: 100; display: flex; gap: 15px;">
+                    <button class="btn" style="background: #111; border: 1px solid var(--neon-red); color: var(--neon-red); font-weight: bold; padding: 10px 20px; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5);" (click)="showLibraryPanel = !showLibraryPanel">
+                        <span>☰</span> OPEN LIBRARY
+                    </button>
+                    <button class="btn" style="background: var(--neon-red); border: 1px solid var(--neon-dark-red); color: #fff; font-weight: bold; padding: 10px 20px; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; box-shadow: 0 0 10px rgba(255,0,0,0.3);" (click)="exportProject()">
+                        <span>💾</span> SAVE AUDIO
+                    </button>
+                </div>
+
+            <!-- EXISTING: Master Mixer Panel -->
+            <div class="daw-right-panel daw-panel" style="flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding-bottom: 20px;">
+                <div class="mixer-header">Master Mixer</div>
+                <div class="channel-strips">
+                    <!-- Dynamic Tracks -->
+                    <div class="strip" *ngFor="let trk of dawTracks">
+                        <div class="strip-label" [title]="trk.name">{{ trk.name | slice:0:6 }}</div>
+                        <div class="knob-container" style="position: relative;" title="Pan (L/R)">
+                            <div class="knob-indicator" [style.transform]="'rotate(' + (trk.pan * 1.5) + 'deg)'"></div>
+                            <input type="range" orient="horizontal" min="-50" max="50" [(ngModel)]="trk.pan" (input)="updateTrackPan(trk)" 
+                                   style="position: absolute; top:0; left:0; width: 100%; height: 100%; opacity: 0; cursor: ew-resize; z-index: 10;">
+                        </div>
+                        <div class="fader-container">
+                            <div class="fader-track"></div>
+                            <input type="range" orient="vertical" min="0" max="100" [(ngModel)]="trk.volume" (input)="updateTrackVolume(trk)">
+                            <div class="meter-container"><div class="meter-level" [style.height.%]="trk.volume"></div></div>
+                        </div>
+                        <div class="strip-buttons">
+                            <button class="strip-btn" [class.muted]="trk.isMuted" [style.color]="trk.isMuted ? '#f00' : '#666'" (click)="toggleMute(trk)">M</button>
+                            <button class="strip-btn" [class.solo-active]="trk.isSoloed" [style.color]="trk.isSoloed ? '#f90' : '#666'" (click)="toggleSolo(trk)">S</button>
+                            <button class="strip-btn" [style.color]="activeFxTrack === trk ? 'var(--neon-red)' : '#666'" (click)="activeFxTrack = activeFxTrack === trk ? null : trk" title="Track FX">FX</button>
+                        </div>
+                    </div>
+
+                    <!-- Master Channel -->
+                    <div class="strip" style="background: #222; border-color: #333;">
+                        <div class="strip-label text-neon-red">MST</div>
+                        <div class="knob-container" style="border-color: #550000"><div class="knob-indicator"></div></div>
+                        <div class="fader-container">
+                            <div class="fader-track"></div>
+                            <input type="range" orient="vertical" min="0" max="100" value="90">
+                            <div class="meter-container" style="width: 12px; right: 2px;"><div class="meter-level"></div></div>
+                        </div>
+                        <div class="strip-buttons">
+                            <button class="strip-btn muted">M</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FX PANEL (Only visible when activeFxTrack is mathematically pointed) -->
+            <div *ngIf="activeFxTrack" class="daw-panel fx-panel" style="margin-bottom: 20px; padding: 20px; background: #0a0a0a; border: 1px solid var(--neon-red); border-radius: 8px; box-shadow: 0 5px 20px rgba(255, 0, 0, 0.1); position: relative;">
+                <button class="btn btn-sm" style="position: absolute; right: 15px; top: 15px; background: transparent; border: none; color: #888;" (click)="activeFxTrack = null">✕</button>
+                <h4 style="color: #fff; margin-top: 0; margin-bottom: 20px; letter-spacing: 2px;">{{ activeFxTrack.name }} - FX CHAIN</h4>
+                
+                <div style="display: flex; gap: 30px; flex-wrap: wrap;">
+                    <!-- EQ Section -->
+                    <div class="fx-section" style="flex: 1; border: 1px solid #222; padding: 15px; border-radius: 6px; background: #111; min-width: 250px;">
+                        <h5 style="color: #aaa; font-size: 0.8rem; margin-top: 0; text-align: center; letter-spacing: 1px;">MULTI-BAND EQ</h5>
+                        <div style="display: flex; justify-content: space-around; margin-top: 15px;">
+                            <div style="display: flex; flex-direction: column; align-items: center;">
+                                <input type="range" orient="vertical" min="-40" max="40" [(ngModel)]="activeFxTrack.eq.low" (input)="updateFx(activeFxTrack)" style="height: 80px; accent-color: var(--neon-red);">
+                                <span style="font-size: 0.7rem; color: #888; margin-top: 5px; font-weight: bold;">LOW</span>
+                            </div>
+                            <div style="display: flex; flex-direction: column; align-items: center;">
+                                <input type="range" orient="vertical" min="-40" max="40" [(ngModel)]="activeFxTrack.eq.mid" (input)="updateFx(activeFxTrack)" style="height: 80px; accent-color: var(--neon-red);">
+                                <span style="font-size: 0.7rem; color: #888; margin-top: 5px; font-weight: bold;">MID</span>
+                            </div>
+                            <div style="display: flex; flex-direction: column; align-items: center;">
+                                <input type="range" orient="vertical" min="-40" max="40" [(ngModel)]="activeFxTrack.eq.high" (input)="updateFx(activeFxTrack)" style="height: 80px; accent-color: var(--neon-red);">
+                                <span style="font-size: 0.7rem; color: #888; margin-top: 5px; font-weight: bold;">HIGH</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Compressor Section -->
+                    <div class="fx-section" style="flex: 1; border: 1px solid #222; padding: 15px; border-radius: 6px; background: #111; min-width: 250px;">
+                        <h5 style="color: #aaa; font-size: 0.8rem; margin-top: 0; text-align: center; letter-spacing: 1px;">DYNAMICS COMPRESSOR</h5>
+                        <div style="display: flex; justify-content: center; align-items: center; height: 100px;">
+                            <div style="width: 85%;">
+                                <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: #888; font-weight: bold;"><span>BYPASS</span><span>SQUASH</span></div>
+                                <input type="range" min="0" max="100" [(ngModel)]="activeFxTrack.compression" (input)="updateFx(activeFxTrack)" style="width: 100%; margin-top: 10px; accent-color: var(--neon-red);">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Spatial Section -->
+                    <div class="fx-section" style="flex: 1; border: 1px solid #222; padding: 15px; border-radius: 6px; background: #111; min-width: 250px;">
+                        <h5 style="color: #aaa; font-size: 0.8rem; margin-top: 0; text-align: center; letter-spacing: 1px;">SPATIAL PROCESSORS</h5>
+                        <div style="display: flex; flex-direction: column; justify-content: space-between; height: 100px;">
+                            <div style="width: 100%;">
+                                <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: #888; font-weight: bold;"><span>REVERB (WET MIX)</span><span>{{ activeFxTrack.reverbMix }}%</span></div>
+                                <input type="range" min="0" max="100" [(ngModel)]="activeFxTrack.reverbMix" (input)="updateFx(activeFxTrack)" style="width: 100%; margin-top: 5px; accent-color: var(--neon-red);">
+                            </div>
+                            <div style="width: 100%;">
+                                <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: #888; font-weight: bold;"><span>DELAY (WET MAP)</span><span>{{ activeFxTrack.delayMix }}%</span></div>
+                                <input type="range" min="0" max="100" [(ngModel)]="activeFxTrack.delayMix" (input)="updateFx(activeFxTrack)" style="width: 100%; margin-top: 5px; accent-color: var(--neon-red);">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MASTER SPECTRUM ANALYZER BRIDGE -->
+            <div class="daw-analyzer-bridge" [style.display]="isPlaying ? 'flex' : 'none'">
+                <!-- Native 60fps DOM Mutation Target Blocks -->
+                <div *ngFor="let val of analyzerBars" #meterBar class="meter-bar"></div>
+            </div>
+
+            <!-- MIXER RECOVERY TOOLBAR (Moved above timeline) -->
+            <div class="mixer-recovery-toolbar" style="margin-bottom: 20px; position: relative; z-index: 50; box-shadow: 0 5px 15px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px;">
+                <div class="transport-group">
+                    <button class="t-btn btn-stop" title="Stop" (click)="stopTimeline()">■</button>
+                    <button class="t-btn btn-play" title="Play/Pause" [class.active]="isPlaying" (click)="isPlaying ? pauseTimeline() : playTimeline()">{{ isPlaying ? '⏸' : '▶' }}</button>
+                    <button class="t-btn btn-record" title="Record">●</button>
+                    <div class="timer-display" style="width: 80px; text-align: center; font-variant-numeric: tabular-nums; font-family: monospace;">
+                        {{ formatPlaybackTime(currentPlayTime) | slice:0:7 }}
+                    </div>
+                </div>
+                
+                <div style="display: flex; align-items: center; gap: 10px; margin-left: 20px; border-left: 1px solid #333; padding-left: 20px;">
+                    <span style="color: #666; font-size: 0.7rem; font-weight: bold; letter-spacing: 1px;">MACRO ZOOM</span>
+                    <input type="range" min="1" max="1500" [(ngModel)]="zoomLevel" (change)="onZoomChange()" style="width: 150px; accent-color: var(--neon-red);" title="Adjust Time Scaling to Milliseconds">
+                </div>
+                
+                <div class="recovery-group" style="display: flex; flex: 1; align-items: center; justify-content: space-between; gap: 20px; margin-left: auto;">
+                    <button class="btn btn-recovery" style="border: 1px solid #333; background: transparent; color: #ff3333; flex: 1;" (click)="clearTimeline()" title="Wipe timeline clips">🗑 CLEAR TRACK</button>
+                    <button class="btn btn-recovery" style="flex: 1;" (click)="mockAction('Continue Last Project')">CONTINUE LAST PROJECT</button>
+                </div>
+            </div>
+
+            <!-- BOTTOM PANEL (TIMELINE) MOVED HERE -->
+            <!-- TIMELINE (Spanning 10 Minutes horizontally) -->
+            <div class="daw-timeline daw-panel" style="overflow-x: auto; background: #0d0d0f; border: 1px solid #222; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                <!-- Inner container width mapped dynamically based on macro zoom bounds -->
+                <div [style.min-width.px]="timelineTotalWidthPx" style="position: relative; padding-bottom: 50px;">
+                <div class="timeline-ruler" [style.width.px]="timelineTotalWidthPx">
+                    <ng-container *ngFor="let marker of timeMarkers">
+                        <span class="time-marker" [style.position]="'absolute'" [style.left.px]="marker.offsetPx" style="transform: translateX(-50%); font-size: 0.65rem; color: #666; font-weight: bold; pointer-events: none;">{{ marker.label }}</span>
+                    </ng-container>
+                </div>
+                
+                <div class="timeline-tracks">
+                    <!-- Playhead scales exactly linearly with user zoom mapped -->
+                    <div class="playhead" (mousedown)="onPlayheadMouseDown($event)" style="cursor: ew-resize;" [style.left.px]="(currentPlayTime * pixelsPerSecond)"></div>
+                    <!-- Timeline Tracks dynamically mapped up to 20 tracks -->
+                    <div class="timeline-row" *ngFor="let trk of dawTracks" (dragover)="onTimelineDragOver($event)" (drop)="onTimelineDrop($event, trk)" [style.width.px]="timelineTotalWidthPx" style="margin-bottom: 10px; height: 35px; background: rgba(0,0,0,0.3); border-radius: 4px; border: 1px solid #222; position: relative;">
+                        
+                        <!-- Track Clips -->
+                        <div *ngFor="let clip of trk.clips" class="audio-block" [ngClass]="clip.isRecording ? 'red-block' : 'gray-block'" 
+                             (mousedown)="onClipMouseDown($event, clip, trk)"
+                             (contextmenu)="onClipContextMenu($event, clip, trk)"
+                             [style.left.px]="clip.startPx" [style.width.px]="clip.widthPx" 
+                             style="position: absolute; top: 2px; height: 30px; display: flex; align-items: center; justify-content: flex-start; padding: 0; border-radius: 4px; overflow: hidden; cursor: grab; background-color: rgba(0,0,0,0.6);">
+                            <!-- Procedural Web Audio Canvas Waveform Array -->
+                            <app-waveform *ngIf="clip.buffer" [buffer]="clip.buffer" [widthPx]="clip.widthPx" [color]="clip.isRecording ? '#ff4040' : '#88ccff'" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;"></app-waveform>
+                            
+                            <div style="position: absolute; left: 5px; top: 8px; background: rgba(0,0,0,0.5); padding: 2px 6px; border-radius: 3px; font-size: 0.65rem; font-weight: bold; color: #fff; z-index: 10; pointer-events: none; white-space: nowrap; max-width: 90%; overflow: hidden; text-overflow: ellipsis; border: 1px solid rgba(255,255,255,0.1);">{{ clip.title }}</div>
+                        </div>
+                        
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div> <!-- end .mixer-panels-wrapper -->
+
+            <!-- Global Context Menu Overlay -->
+            <div *ngIf="contextMenuVisible" class="daw-context-menu" 
+                 [style.left.px]="contextMenuX" [style.top.px]="contextMenuY"
+                 style="position: fixed; z-index: 9999; background: #1a1a1a; border: 1px solid #333; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.8); min-width: 150px; padding: 5px 0;">
+                <div class="context-item" (click)="duplicateContextClip()" style="padding: 8px 15px; color: #fff; cursor: pointer; font-size: 0.85rem; font-weight: bold; border-bottom: 1px solid #222;" onmouseover="this.style.background='#ff000033'" onmouseout="this.style.background='transparent'">⧉ DUPLICATE</div>
+                <div class="context-item" (click)="deleteContextClip()" style="padding: 8px 15px; color: #ff3333; cursor: pointer; font-size: 0.85rem; font-weight: bold;" onmouseover="this.style.background='#ff000033'" onmouseout="this.style.background='transparent'">✕ DELETE</div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

@@ -1,1 +1,304 @@
-/* You can add global styles to this file, and also import other style files */
+/* Global Styles for SXV Studio */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@400;700;900&display=swap');
+
+:root {
+  /* Core Colors (Grayscale only) */
+  --bg-dark: #000000;
+  --bg-panel: rgba(20, 20, 20, 0.8);
+  --text-main: #ffffff;
+  --text-muted: #888888;
+
+  /* Neon Accents (Reds) */
+  --neon-red: #ff0000;
+  --neon-dark-red: #cc0000;
+  --neon-crimson: #8a0000;
+
+  /* Glow Effects */
+  --glow-red: 0 0 10px rgba(255, 0, 0, 0.5), 0 0 20px rgba(255, 0, 0, 0.3);
+  --glow-dark-red: 0 0 10px rgba(204, 0, 0, 0.5), 0 0 20px rgba(204, 0, 0, 0.3);
+
+  /* UI Elements */
+  --border-radius: 12px;
+  --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-image:
+    linear-gradient(rgba(20, 20, 20, 0.9) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(20, 20, 20, 0.9) 1px, transparent 1px);
+  background-size: 30px 30px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* Glassmorphism Panels */
+.glass-panel {
+  background: var(--bg-panel);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--border-radius);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+/* Neon Text Utilities */
+.text-neon-red {
+  color: var(--neon-red);
+  text-shadow: var(--glow-red);
+}
+
+.text-neon-dark-red {
+  color: var(--neon-dark-red);
+  text-shadow: var(--glow-dark-red);
+}
+
+/* Base Inputs */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  transition: var(--transition);
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--neon-dark-red);
+  box-shadow: 0 0 0 2px rgba(204, 0, 0, 0.2);
+}
+
+/* Base Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  transition: var(--transition);
+  border: none;
+  outline: none;
+}
+
+/* --- Legal Pages CSS --- */
+.legal-container {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+}
+
+.legal-panel {
+    max-width: 800px;
+    width: 100%;
+    padding: 50px;
+    text-align: left;
+}
+
+.legal-panel h2 {
+    font-size: 2.5rem;
+    margin-bottom: 5px;
+}
+
+.effective-date {
+    color: var(--neon-crimson);
+    font-size: 0.9rem;
+    margin-bottom: 40px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.legal-content h3 {
+    margin-top: 35px;
+    margin-bottom: 12px;
+    color: #f5f5f5;
+    font-size: 1.3rem;
+}
+
+.legal-content p {
+    color: #aaa;
+    line-height: 1.7;
+    font-size: 1.05rem;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--neon-red), var(--neon-crimson));
+  color: white;
+  box-shadow: 0 4px 15px rgba(255, 0, 60, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 0, 60, 0.5);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--neon-dark-red);
+  border: 1px solid var(--neon-dark-red);
+}
+
+.btn-secondary:hover {
+  background: rgba(204, 0, 0, 0.1);
+  box-shadow: var(--glow-dark-red);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* --- LIGHT THEME OVERRIDES --- */
+body.light-theme {
+    --bg-dark: #ffffff;
+    --bg-panel: rgba(255, 255, 255, 0.9);
+    --text-main: #333333;
+    --text-muted: #666666;
+    background-image: none;
+}
+
+body.light-theme h1,
+body.light-theme h2,
+body.light-theme h3,
+body.light-theme h4,
+body.light-theme h5,
+body.light-theme h6,
+body.light-theme .workspace-title {
+    color: #000 !important;
+}
+
+body.light-theme .glass-panel {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    background: #ffffff;
+}
+
+body.light-theme .form-control {
+    background: #f5f5f5 !important;
+    border: 1px solid #ccc !important;
+    color: #000 !important;
+}
+
+body.light-theme .daw-panel {
+    background: #ffffff !important;
+    border: 1px solid #eee !important;
+}
+
+body.light-theme .nav-item {
+    color: #555;
+}
+
+body.light-theme .nav-item:hover, body.light-theme .nav-item.active {
+    background: rgba(255,0,0,0.1);
+    color: #000;
+}
+
+body.light-theme .text-muted {
+    color: #666 !important;
+}
+
+/* Force dark inline backgrounds to become light in Light Mode */
+body.light-theme [style*="background: #111"],
+body.light-theme [style*="background: #222"],
+body.light-theme [style*="background: #0f0f15"],
+body.light-theme [style*="background: #0a0a0a"],
+body.light-theme [style*="background: #0d0d0f"],
+body.light-theme [style*="background: rgba(10,10,10,0.95)"],
+body.light-theme .track-row,
+body.light-theme .editor-right-panel,
+body.light-theme .editor-master-panel,
+body.light-theme .editor-side-panel,
+body.light-theme .daw-timeline,
+body.light-theme .editor-timeline-headers > div,
+body.light-theme .fx-module,
+body.light-theme .editor-timeline-wrapper,
+body.light-theme .daw-context-menu,
+body.light-theme .settings-card,
+body.light-theme [style*="background: rgba(20,20,25,0.8)"] {
+    background-color: #f8f9fa !important;
+    border-color: #ddd !important;
+}
+
+/* Make text visible against the new light backgrounds */
+body.light-theme [style*="color: #fff"],
+body.light-theme [style*="color: #aaa"],
+body.light-theme .editor-timeline-headers > div,
+body.light-theme .clip-title,
+body.light-theme .status-text,
+body.light-theme .strip-label,
+body.light-theme label,
+body.light-theme .panel-header,
+body.light-theme h4,
+body.light-theme h5,
+body.light-theme .fake-waveform + div {
+    color: #333 !important;
+}
+
+body.light-theme .audio-block {
+    background-color: #e9ecef !important;
+    border-color: #ccc !important;
+}
+
+body.light-theme [style*="background: rgba(0,0,0,0.5)"],
+body.light-theme [style*="background: rgba(0,0,0,0.8)"],
+body.light-theme [style*="background: rgba(0,0,0,0.6)"] {
+    background-color: #f1f3f5 !important;
+    color: #333 !important;
+}
+
+body.light-theme .main-nav a.active,
+body.light-theme .main-nav a:hover,
+body.light-theme .main-nav a.text-neon-dark-red.active {
+    color: #000 !important;
+    text-shadow: none !important;
+}
+
+/* Invert the dark eagle logo for light mode to create the "white version" */
+body.light-theme .hero-section::before {
+    filter: invert(1) hue-rotate(180deg) blur(8px) !important;
+    opacity: 0.2 !important;
+}

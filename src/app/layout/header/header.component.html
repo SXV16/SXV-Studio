@@ -1,0 +1,35 @@
+<header class="app-header glass-panel">
+    <div class="logo">
+        <span class="text-neon-red">SXV</span>
+        <span class="text-neon-dark-red">STUDIO</span>
+    </div>
+
+    <nav class="main-nav">
+        <ul>
+            <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a></li>
+            
+            <!-- Contextual Link Container -->
+            <ng-container *ngIf="(currentUser$ | async) !== null; else guestLibrary">
+                <li><a routerLink="/dashboard" routerLinkActive="active" class="text-neon-dark-red">Dashboard</a></li>
+            </ng-container>
+            <ng-template #guestLibrary>
+                <li><a routerLink="/studio" routerLinkActive="active">Studio</a></li>
+            </ng-template>
+        </ul>
+    </nav>
+
+    <div class="auth-actions" *ngIf="(currentUser$ | async) === null">
+        <button class="btn btn-secondary" routerLink="/login">Log In</button>
+        <button class="btn btn-primary" routerLink="/register">Sign Up</button>
+    </div>
+
+    <button class="btn btn-sm" style="background:transparent; border:none; color:var(--text-main); font-size:1.5rem; cursor:pointer;" (click)="toggleTheme()" title="Toggle Theme">
+        {{ isLightMode ? '🌙' : '☀️' }}
+    </button>
+
+    <div class="user-profile" *ngIf="currentUser$ | async as user" style="display: flex; align-items: center; gap: 15px;">
+        <span class="user-name">Welcome, <strong class="text-neon-red">{{ user.username }}</strong></span>
+        <button class="btn btn-primary btn-sm" routerLink="/profile" [routerLinkActive]="['active']">Profile</button>
+        <button class="btn btn-secondary btn-sm" (click)="logout()">Log Out</button>
+    </div>
+</header>

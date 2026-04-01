@@ -1,0 +1,30 @@
+<div class="support-container">
+    <div class="glass-panel support-panel">
+        <h2 class="text-neon-red section-title">Support & Feedback</h2>
+        <p class="subtitle">Encountering a bug or just have some raw feedback? Drop us a line.</p>
+        
+        <form class="support-form" (submit)="submitFeedback($event)">
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" placeholder="Enter your email" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Inquiry Type</label>
+                <select>
+                    <option>Bug Report</option>
+                    <option>Feature Request</option>
+                    <option>Account Assistance</option>
+                    <option>General Feedback</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Message</label>
+                <textarea rows="5" placeholder="Provide as much detail as possible..." required></textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-primary submit-btn">Submit Request</button>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,99 @@
+.profile-container {
+    max-width: 800px;
+    margin: 120px auto 40px auto;
+    padding: 40px;
+    background: #0f0f15;
+    border: 1px solid #222;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+}
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 0, 0, 0.2);
+    padding-bottom: 15px;
+    margin-bottom: 40px;
+}
+.profile-header h2 {
+    margin: 0;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+.profile-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 50px;
+    align-items: center;
+    justify-content: center;
+}
+.avatar-section {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+.avatar-wrapper {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    margin: 0 auto;
+    background: #111;
+    border: 3px solid #333;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    box-shadow: 0 5px 20px rgba(255,0,0,0.15);
+    transition: all 0.3s ease;
+}
+.avatar-wrapper:hover {
+    border-color: var(--neon-red);
+    box-shadow: 0 5px 25px rgba(255,0,0,0.4);
+}
+.avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.avatar-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+.avatar-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(204,0,0,0.8);
+    color: #fff;
+    padding: 12px 0;
+    font-size: 0.85rem;
+    cursor: pointer;
+    font-weight: bold;
+    opacity: 0;
+    transition: opacity 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.avatar-wrapper:hover .avatar-overlay {
+    opacity: 1;
+}
+.details-section {
+    flex: 1;
+    min-width: 300px;
+}
+.details-section .form-group label {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+    display: block;
+}
+.static-value {
+    letter-spacing: 0.5px;
+    font-size: 1.05rem;
+}

@@ -1,0 +1,24 @@
+<div class="verify-container">
+  <div class="verify-box">
+    <div *ngIf="isVerifying" class="status-panel">
+      <div class="spinner"></div>
+      <h2 class="text-neon-red">Verifying Account...</h2>
+      <p>Please wait while we check your verification link.</p>
+    </div>
+
+    <div *ngIf="!isVerifying && isSuccess" class="status-panel success">
+      <div class="icon">✔️</div>
+      <h2 class="text-neon-crimson">Account Verified</h2>
+      <p class="message">{{ message }}</p>
+      <p class="redirect-txt">Redirecting to login...</p>
+      <button class="btn btn-primary mt-3" routerLink="/login">Go to Login Now</button>
+    </div>
+
+    <div *ngIf="!isVerifying && !isSuccess" class="status-panel error">
+      <div class="icon">❌</div>
+      <h2 class="text-neon-dark-red">Verification Failed</h2>
+      <p class="message">{{ message }}</p>
+      <button class="btn btn-secondary mt-3" routerLink="/login">Back to Login</button>
+    </div>
+  </div>
+</div>

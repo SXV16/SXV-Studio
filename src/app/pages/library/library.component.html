@@ -1,0 +1,33 @@
+<div class="library-container">
+    <div class="library-header">
+        <h1 class="text-neon-dark-red">Your Tracks</h1>
+        <button class="btn btn-primary" routerLink="/studio">New Recording</button>
+    </div>
+
+    <div *ngIf="loading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading library...</p>
+    </div>
+
+    <div *ngIf="!loading && tracks.length === 0" class="empty-state glass-panel">
+        <div class="icon text-neon-red">🎤</div>
+        <h3>No tracks found</h3>
+        <p>You haven't recorded anything yet. Head to the studio to drop your first beat.</p>
+    </div>
+
+    <div class="track-grid" *ngIf="!loading && tracks.length > 0">
+        <div class="track-card glass-panel" *ngFor="let track of tracks">
+            <div class="track-info">
+                <h3>{{ track.title }}</h3>
+                <p class="track-date">{{ track.created_at | date:'mediumDate' }}</p>
+            </div>
+
+            <div class="track-actions">
+                <button class="btn btn-secondary btn-sm" (click)="playTrack(track)" title="Play">
+                  {{ playingTrackId === track.id ? '⏸ Pause' : '▶ Play' }}
+                </button>
+                <button class="btn btn-danger btn-sm" (click)="deleteTrack(track.id)" title="Delete">🗑️</button>
+            </div>
+        </div>
+    </div>
+</div>

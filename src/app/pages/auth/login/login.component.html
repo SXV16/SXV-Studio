@@ -1,0 +1,43 @@
+<div class="auth-container">
+    <div class="auth-card glass-panel">
+        <h2 class="text-neon-dark-red">Welcome Back</h2>
+        <p class="auth-subtitle">Log in to your studio session</p>
+
+        <div *ngIf="error" class="error-banner">
+            <div>{{ error }}</div>
+            <div *ngIf="verifyToken" style="margin-top: 10px;">
+                <a [routerLink]="['/verify']" [queryParams]="{token: verifyToken}" class="btn btn-sm" style="background:#550000; color:#fff; text-decoration:none; padding: 5px 15px; border-radius: 4px; border: 1px solid var(--neon-red); font-weight: bold;">Verify Account Now</a>
+            </div>
+        </div>
+
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" formControlName="email" class="form-control"
+                    placeholder="Enter your email">
+                <div class="validation-error"
+                    *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.invalid">
+                    Please enter a valid email.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" formControlName="password" class="form-control"
+                    placeholder="Enter your password">
+                <div class="validation-error"
+                    *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid">
+                    Password is required.
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100" [disabled]="loginForm.invalid || loading">
+                {{ loading ? 'Connecting...' : 'Log In' }}
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            <p>Don't have an account? <a routerLink="/register" class="text-neon-red">Sign up</a></p>
+        </div>
+    </div>
+</div>
