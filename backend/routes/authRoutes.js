@@ -17,4 +17,19 @@ router.post('/login', authController.loginUser);
 // @access  Public
 router.post('/verify', authController.verifyEmail);
 
+// @route   POST /api/auth/forgot-password
+// @desc    Send password reset email
+// @access  Public
+router.post('/forgot-password', authController.forgotPassword);
+
+// @route   POST /api/auth/reset-password
+// @desc    Reset password with emailed token
+// @access  Public
+router.post('/reset-password', authController.resetPassword);
+
+// @route   POST /api/auth/sync-password
+// @desc    Sync password from Supabase password reset
+// @access  Public
+router.post('/sync-password', authController.syncPassword);
+
 module.exports = router;

@@ -13,6 +13,7 @@ export class LoginComponent {
   error: string = '';
   verifyToken: string | null = null;
   loading: boolean = false;
+  hidePassword: boolean = true;
 
   constructor(
     private fb: FormBuilder,
@@ -23,6 +24,10 @@ export class LoginComponent {
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
     });
+  }
+
+  togglePasswordVisibility() {
+    this.hidePassword = !this.hidePassword;
   }
 
   onSubmit() {

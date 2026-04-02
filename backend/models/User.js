@@ -28,7 +28,7 @@ const User = sequelize.define('User', {
         defaultValue: 'user'
     },
     tier: {
-        type: DataTypes.ENUM('Basic', 'DJ', 'Pro DJ'),
+        type: DataTypes.ENUM('Basic', 'DJ', 'Pro DJ', 'Sxvxge DJ'),
         defaultValue: 'Basic'
     },
     artist_name: {
@@ -50,6 +50,14 @@ const User = sequelize.define('User', {
     verification_token: {
         type: DataTypes.STRING,
         allowNull: true
+    },
+    reset_password_token: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    reset_password_expires: {
+        type: DataTypes.DATE,
+        allowNull: true
     }
 }, {
     tableName: 'users',
@@ -59,4 +67,3 @@ const User = sequelize.define('User', {
 });
 
 module.exports = User;
-

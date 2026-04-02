@@ -5,7 +5,8 @@ import { HomeComponent } from './pages/home/home.component';
 import { LoginComponent } from './pages/auth/login/login.component';
 import { RegisterComponent } from './pages/auth/register/register.component';
 import { VerifyComponent } from './pages/auth/verify/verify.component';
-import { StudioComponent } from './pages/studio/studio.component';
+import { ForgotPasswordComponent } from './pages/auth/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './pages/auth/reset-password/reset-password.component';
 import { LibraryComponent } from './pages/library/library.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { PrivacyComponent } from './pages/privacy/privacy.component';
@@ -23,7 +24,8 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent, canActivate: [GuestGuard] },
   { path: 'register', component: RegisterComponent, canActivate: [GuestGuard] },
   { path: 'verify', component: VerifyComponent },
-  { path: 'studio', component: StudioComponent, canActivate: [AuthGuard] },
+  { path: 'forgot-password', component: ForgotPasswordComponent, canActivate: [GuestGuard] },
+  { path: 'reset-password', component: ResetPasswordComponent, canActivate: [GuestGuard] },
   { path: 'library', component: LibraryComponent, canActivate: [AuthGuard] },
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
   { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },

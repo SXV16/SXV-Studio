@@ -60,7 +60,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   currentUser: any = null;
 
   // Mock Stats
-  storageUsed = '0 Bytes / 50 MB';
+  storageUsed = '0 Bytes / 15 MB';
   storagePercentage = 0;
   lastSession = new Date();
 
@@ -499,18 +499,22 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   updateStorageDisplay(totalBytes: number) {
       const tier = this.currentUser?.tier || 'Basic';
-      let limitMB = 50;
-      let limitStr = '50 MB';
+      const username = this.currentUser?.username?.toLowerCase();
+      let limitMB = 15;
+      let limitStr = '15 MB';
       
-      if (tier === 'DJ') {
-          limitMB = 500;
-          limitStr = '500 MB';
-      } else if (tier === 'Pro DJ') {
+      if (username === 'sxvxgemelo' || username === 'sxvxge melo' || tier === 'Sxvxge DJ') {
           limitMB = -1;
           limitStr = 'Unlimited';
-      } else {
+      } else if (tier === 'DJ') {
           limitMB = 50;
           limitStr = '50 MB';
+      } else if (tier === 'Pro DJ') {
+          limitMB = 500;
+          limitStr = '500 MB';
+      } else {
+          limitMB = 15;
+          limitStr = '15 MB';
       }
       
       if (limitMB === -1) {

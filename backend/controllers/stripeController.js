@@ -4,7 +4,8 @@ const { User } = require('../models');
 // Configure Product Prices (In a real app, use Stripe Price IDs from your Dashboard)
 const PRICES = {
     'DJ': 'price_mock_dj_tier_299',
-    'Pro DJ': 'price_mock_prodj_tier_999'
+    'Pro DJ': 'price_mock_prodj_tier_999',
+    'Sxvxge DJ': 'price_mock_sxvxgedj_tier_1999'
 };
 
 const createCheckoutSession = async (req, res) => {
@@ -12,7 +13,7 @@ const createCheckoutSession = async (req, res) => {
         const { planTier } = req.body; 
         const user = req.user; // from authMiddlware
 
-        if (!['DJ', 'Pro DJ'].includes(planTier)) {
+        if (!['DJ', 'Pro DJ', 'Sxvxge DJ'].includes(planTier)) {
             return res.status(400).json({ error: 'Invalid plan tier requested' });
         }
 
@@ -32,7 +33,7 @@ const createCheckoutSession = async (req, res) => {
                         product_data: {
                             name: `SXV Studio ${planTier} Tier`,
                         },
-                        unit_amount: planTier === 'DJ' ? 299 : 999, // cents
+                        unit_amount: planTier === 'DJ' ? 299 : (planTier === 'Pro DJ' ? 999 : 1999), // cents
                         recurring: { interval: 'month' }
                     },
                     quantity: 1,

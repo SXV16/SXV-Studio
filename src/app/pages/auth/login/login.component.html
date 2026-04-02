@@ -23,8 +23,13 @@
 
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" formControlName="password" class="form-control"
-                    placeholder="Enter your password">
+                <div class="password-wrapper">
+                    <input [type]="hidePassword ? 'password' : 'text'" id="password" formControlName="password" class="form-control"
+                        placeholder="Enter your password">
+                    <button type="button" class="password-toggle" (click)="togglePasswordVisibility()" title="Toggle Password Visibility">
+                        <i class="fas" [class.fa-eye]="hidePassword" [class.fa-eye-slash]="!hidePassword"></i>
+                    </button>
+                </div>
                 <div class="validation-error"
                     *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid">
                     Password is required.
@@ -37,7 +42,8 @@
         </form>
 
         <div class="auth-footer">
-            <p>Don't have an account? <a routerLink="/register" class="text-neon-red">Sign up</a></p>
+            <p><a routerLink="/forgot-password" class="text-neon-dark-red" style="font-size: 0.85rem;">Forgot Password?</a></p>
+            <p style="margin-top: 10px;">Don't have an account? <a routerLink="/register" class="text-neon-red">Sign up</a></p>
         </div>
     </div>
 </div>

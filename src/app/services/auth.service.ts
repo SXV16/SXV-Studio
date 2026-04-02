@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, map, tap, from, of } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -57,8 +57,15 @@ export class AuthService {
   }
 
   verifyEmail(token: string): Observable<any> {
-    // Native Node verification stub
     return this.http.post(`${this.apiAuthUrl}/verify`, { token });
+  }
+
+  forgotPassword(email: string): Observable<any> {
+    return this.http.post(`${this.apiAuthUrl}/forgot-password`, { email });
+  }
+
+  resetPassword(token: string, newPassword: string): Observable<any> {
+    return this.http.post(`${this.apiAuthUrl}/reset-password`, { token, newPassword });
   }
 
   // Profile API
@@ -102,8 +109,14 @@ export class AuthService {
     );
   }
 
+  // Password Migration
+  syncMigratedPassword(email: string, newPassword: string): Observable<any> {
+    return this.http.post(`${this.apiAuthUrl}/sync-password`, { email, newPassword });
+  }
+
   logout() {
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
     this.currentUserSubject.next(null);
   }
 }

@@ -186,44 +186,60 @@
             <h2 class="workspace-title">Cloud Services & Upgrades</h2>
             <!-- Pro Container content omitted for brevity -->
             <div class="pro-container" style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
-                <div class="plan-card" style="flex: 1; max-width: 300px;">
+                <div class="plan-card" style="flex: 1; min-width: 250px; max-width: 300px;">
                     <h3 class="text-muted">Basic Tier</h3>
                     <div class="plan-price">Free</div>
                     <ul class="plan-features text-muted">
-                        <li>50MB Storage Limit</li>
+                        <li>15MB Storage Limit</li>
                         <li>Local Storage</li>
-                        <li>5 Demo Tracks</li>
                         <li>Basic EQ</li>
+                        <li><span style="text-decoration: line-through; color: #555;">Editor & Mixer Access</span></li>
                     </ul>
-                    <button class="btn btn-secondary w-100" disabled *ngIf="!currentUser || currentUser.tier === 'Basic'">Current Plan</button>
-                    <button class="btn btn-secondary w-100" disabled *ngIf="currentUser && currentUser.tier !== 'Basic'">Included</button>
+                    <button class="btn btn-secondary w-100" disabled *ngIf="!currentUser || (currentUser.tier === 'Basic' && currentUser?.username?.replace(' ', '')?.toLowerCase() !== 'sxvxgemelo')">Current Plan</button>
+                    <button class="btn btn-secondary w-100" disabled *ngIf="(currentUser && currentUser.tier !== 'Basic') || currentUser?.username?.replace(' ', '')?.toLowerCase() === 'sxvxgemelo'">Included</button>
                 </div>
                 
-                <div class="plan-card" style="flex: 1; max-width: 300px; border: 1px solid var(--neon-crimson); position: relative;">
+                <div class="plan-card" style="flex: 1; min-width: 250px; max-width: 300px; border: 1px solid var(--neon-crimson); position: relative;">
                     <h3 class="text-neon-red">DJ Tier</h3>
                     <div class="plan-price text-neon-red">$2.99<span style="font-size: 1rem; color: #888;">/mo</span></div>
                     <ul class="plan-features">
-                        <li>500MB Cloud Storage</li>
+                        <li>50MB Cloud Storage</li>
                         <li>Advanced Multi-track Mixing</li>
                         <li>VST Plugin Support</li>
+                        <li>Full Editor/Mixer Access</li>
                     </ul>
-                    <button class="btn btn-secondary w-100" (click)="upgradeTier('DJ')" *ngIf="currentUser?.tier !== 'DJ' && currentUser?.tier !== 'Pro DJ'">Upgrade Now</button>
-                    <button class="btn btn-secondary w-100" disabled *ngIf="currentUser?.tier === 'DJ'">Current Plan</button>
-                    <button class="btn btn-secondary w-100" disabled *ngIf="currentUser?.tier === 'Pro DJ'">Included</button>
+                    <button class="btn btn-secondary w-100" (click)="upgradeTier('DJ')" *ngIf="currentUser?.tier !== 'DJ' && currentUser?.tier !== 'Pro DJ' && currentUser?.tier !== 'Sxvxge DJ' && currentUser?.username?.replace(' ', '')?.toLowerCase() !== 'sxvxgemelo'">Upgrade Now</button>
+                    <button class="btn btn-secondary w-100" disabled *ngIf="currentUser?.tier === 'DJ' && currentUser?.username?.replace(' ', '')?.toLowerCase() !== 'sxvxgemelo'">Current Plan</button>
+                    <button class="btn btn-secondary w-100" disabled *ngIf="currentUser?.tier === 'Pro DJ' || currentUser?.tier === 'Sxvxge DJ' || currentUser?.username?.replace(' ', '')?.toLowerCase() === 'sxvxgemelo'">Included</button>
                 </div>
 
-                <div class="plan-card pro-active" style="flex: 1; max-width: 300px; position: relative;">
+                <div class="plan-card pro-active" style="flex: 1; min-width: 250px; max-width: 300px; position: relative;">
                     <div style="position: absolute; top: -10px; right: 20px; background: var(--neon-red); color: #fff; padding: 2px 10px; font-size: 0.7rem; font-weight: bold; border-radius: 10px;">POPULAR</div>
                     <h3 class="text-neon-dark-red">Pro DJ Tier</h3>
                     <div class="plan-price text-neon-red">$9.99<span style="font-size: 1rem; color: #888;">/mo</span></div>
                     <ul class="plan-features">
-                        <li>Unlimited Cloud Storage</li>
+                        <li>500MB Cloud Storage</li>
                         <li>Advanced Multi-track Mixing</li>
                         <li>VST Plugin Support</li>
-                        <li><strong style="color:var(--neon-red)">Mastering AI & Chatbot</strong></li>
+                        <li><span style="text-decoration: line-through; color: #555;">Mastering AI & Chatbot</span></li>
                     </ul>
-                    <button class="btn btn-primary w-100" (click)="upgradeTier('Pro DJ')" *ngIf="currentUser?.tier !== 'Pro DJ'">Upgrade Now</button>
-                    <button class="btn btn-primary w-100" disabled *ngIf="currentUser?.tier === 'Pro DJ'">Current Plan</button>
+                    <button class="btn btn-primary w-100" (click)="upgradeTier('Pro DJ')" *ngIf="currentUser?.tier !== 'Pro DJ' && currentUser?.tier !== 'Sxvxge DJ' && currentUser?.username?.replace(' ', '')?.toLowerCase() !== 'sxvxgemelo'">Upgrade Now</button>
+                    <button class="btn btn-primary w-100" disabled *ngIf="currentUser?.tier === 'Pro DJ' && currentUser?.username?.replace(' ', '')?.toLowerCase() !== 'sxvxgemelo'">Current Plan</button>
+                    <button class="btn btn-secondary w-100" disabled *ngIf="currentUser?.tier === 'Sxvxge DJ' || currentUser?.username?.replace(' ', '')?.toLowerCase() === 'sxvxgemelo'">Included</button>
+                </div>
+
+                <div class="plan-card sxvxge-tier" style="flex: 1; min-width: 250px; max-width: 300px; position: relative; border: 2px solid #ff4040; background: linear-gradient(145deg, #1a0505, #000); box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);">
+                    <div style="position: absolute; top: -10px; right: 20px; background: #fff; color: #000; padding: 2px 10px; font-size: 0.7rem; font-weight: bold; border-radius: 10px;">ULTIMATE</div>
+                    <h3 style="color: #fff; text-shadow: 0 0 10px #ff0000; letter-spacing: 2px;">Sxvxge DJ</h3>
+                    <div class="plan-price text-neon-red" style="font-size: 2.2rem;">$19.99<span style="font-size: 1rem; color: #aaa;">/mo</span></div>
+                    <ul class="plan-features" style="color: #eee;">
+                        <li><strong style="color: #fff">Unlimited Cloud Storage</strong></li>
+                        <li>Advanced Multi-track Mixing</li>
+                        <li>VST Plugin Support</li>
+                        <li><strong style="color:#ff8080;">Mastering AI & Chatbot</strong></li>
+                    </ul>
+                    <button class="btn btn-primary w-100" style="background: #ff4040; color: #fff; border-color: #ff0000;" (click)="upgradeTier('Sxvxge DJ')" *ngIf="currentUser?.tier !== 'Sxvxge DJ' && currentUser?.username?.replace(' ', '')?.toLowerCase() !== 'sxvxgemelo'">Upgrade Now</button>
+                    <button class="btn btn-secondary w-100" style="background: #220000; color: #fff;" disabled *ngIf="currentUser?.tier === 'Sxvxge DJ' || currentUser?.username?.replace(' ', '')?.toLowerCase() === 'sxvxgemelo'">Current Plan</button>
                 </div>
             </div>
         </div>
@@ -329,6 +345,7 @@
 
         <!-- Tab: Editor View -->
         <div *ngIf="activeTab === 'editor'" class="editor-page-layout" style="display: flex; flex-direction: column; gap: 15px; height: 100%; min-height: calc(100vh - 120px); overflow-y: auto; padding-right: 5px;">
+            <ng-container *ngIf="currentUser?.tier !== 'Basic' || currentUser?.username?.replace(' ', '')?.toLowerCase() === 'sxvxgemelo'; else upgradePrompt">
             <!-- TOP BAR (Transport & Smart Controls) -->
             <div class="editor-top-bar daw-panel" style="flex-shrink: 0;">
                  <div class="transport-controls">
@@ -565,11 +582,12 @@
                     </div>
                 </div>
             </div>
+            </ng-container>
         </div>
 
         <!-- Tab: Mixer View -->
         <div *ngIf="activeTab === 'mixer'" class="mixer-page-layout" style="display: flex; flex-direction: column; gap: 20px; position: relative; padding-bottom: 40px; min-height: 100vh;">
-            
+            <ng-container *ngIf="currentUser?.tier !== 'Basic' || currentUser?.username?.replace(' ', '')?.toLowerCase() === 'sxvxgemelo'; else upgradePrompt">
             <div class="mixer-panels-wrapper" style="display: flex; flex-direction: column; gap: 20px; flex: 1; position: relative;">
                 
                 <div style="padding: 10px 0; text-align: left; z-index: 100; display: flex; gap: 15px;">
@@ -744,9 +762,19 @@
                 <div class="context-item" (click)="duplicateContextClip()" style="padding: 8px 15px; color: #fff; cursor: pointer; font-size: 0.85rem; font-weight: bold; border-bottom: 1px solid #222;" onmouseover="this.style.background='#ff000033'" onmouseout="this.style.background='transparent'">⧉ DUPLICATE</div>
                 <div class="context-item" (click)="deleteContextClip()" style="padding: 8px 15px; color: #ff3333; cursor: pointer; font-size: 0.85rem; font-weight: bold;" onmouseover="this.style.background='#ff000033'" onmouseout="this.style.background='transparent'">✕ DELETE</div>
             </div>
-
+            </ng-container>
         </div>
 
     </div>
+
+    <!-- Upgrade Prompt Template -->
+    <ng-template #upgradePrompt>
+        <div class="upgrade-overlay" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; background: rgba(10, 5, 5, 0.95); border-radius: 8px; border: 1px solid #330000; box-shadow: inset 0 0 50px rgba(255, 0, 0, 0.1); padding: 50px;">
+            <div style="font-size: 4rem; margin-bottom: 20px;">🔒</div>
+            <h2 class="text-neon-red" style="font-size: 2.5rem; margin-bottom: 10px;">Premium Feature</h2>
+            <p class="text-muted" style="font-size: 1.2rem; max-width: 500px; margin-bottom: 30px;">The Editor and Mixer boards are reserved for premium artists. <br>Upgrade to DJ Tier or higher to unlock the full multitrack DAW!</p>
+            <button class="btn btn-primary btn-lg" style="padding: 15px 40px; font-size: 1.2rem; background: var(--neon-dark-red); border-color: var(--neon-red);" (click)="activeTab = 'pro'">VIEW CLOUD UPGRADES</button>
+        </div>
+    </ng-template>
 
 </div>

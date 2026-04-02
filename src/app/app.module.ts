@@ -10,7 +10,6 @@ import { FooterComponent } from './layout/footer/footer.component';
 import { HomeComponent } from './pages/home/home.component';
 import { LoginComponent } from './pages/auth/login/login.component';
 import { RegisterComponent } from './pages/auth/register/register.component';
-import { StudioComponent } from './pages/studio/studio.component';
 import { LibraryComponent } from './pages/library/library.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { PrivacyComponent } from './pages/privacy/privacy.component';
@@ -22,6 +21,9 @@ import { ChatbotComponent } from './components/chatbot/chatbot.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { DialogComponent } from './components/dialog/dialog.component';
 
+import { ForgotPasswordComponent } from './pages/auth/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './pages/auth/reset-password/reset-password.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -30,7 +32,6 @@ import { DialogComponent } from './components/dialog/dialog.component';
     HomeComponent,
     LoginComponent,
     RegisterComponent,
-    StudioComponent,
     LibraryComponent,
     DashboardComponent,
     PrivacyComponent,
@@ -40,7 +41,9 @@ import { DialogComponent } from './components/dialog/dialog.component';
     VerifyComponent,
     ChatbotComponent,
     ProfileComponent,
-    DialogComponent
+    DialogComponent,
+    ForgotPasswordComponent,
+    ResetPasswordComponent
   ],
   imports: [
     BrowserModule,

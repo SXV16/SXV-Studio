@@ -4,6 +4,9 @@
         <p class="auth-subtitle">Join the studio to save your tracks</p>
 
         <div *ngIf="error" class="error-banner">{{ error }}</div>
+        <div *ngIf="successMsg" class="success-banner" style="background: rgba(0, 150, 0, 0.2); border: 1px solid #00ff00; color: #00ff00; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: bold; font-size: 0.95rem;">
+            {{ successMsg }}
+        </div>
 
         <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
             <div class="form-group">
@@ -32,8 +35,13 @@
 
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" formControlName="password" class="form-control"
-                    placeholder="Create a password">
+                <div class="password-wrapper">
+                    <input [type]="hidePassword ? 'password' : 'text'" id="password" formControlName="password" class="form-control"
+                        placeholder="Create a password">
+                    <button type="button" class="password-toggle" (click)="togglePasswordVisibility()" title="Toggle Password Visibility">
+                        <i class="fas" [class.fa-eye]="hidePassword" [class.fa-eye-slash]="!hidePassword"></i>
+                    </button>
+                </div>
                 <div class="validation-error"
                     *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.errors?.['required']">
                     Password is required.
@@ -46,8 +54,13 @@
 
             <div class="form-group">
                 <label for="confirmPassword">Confirm Password</label>
-                <input type="password" id="confirmPassword" formControlName="confirmPassword" class="form-control"
-                    placeholder="Repeat password">
+                <div class="password-wrapper">
+                    <input [type]="hideConfirmPassword ? 'password' : 'text'" id="confirmPassword" formControlName="confirmPassword" class="form-control"
+                        placeholder="Repeat password">
+                    <button type="button" class="password-toggle" (click)="toggleConfirmPasswordVisibility()" title="Toggle Confirm Password Visibility">
+                        <i class="fas" [class.fa-eye]="hideConfirmPassword" [class.fa-eye-slash]="!hideConfirmPassword"></i>
+                    </button>
+                </div>
                 <div class="validation-error"
                     *ngIf="registerForm.get('confirmPassword')?.touched && registerForm.hasError('mismatch')">
                     Passwords do not match.

@@ -11,7 +11,10 @@ import { AuthService } from '../../../services/auth.service';
 export class RegisterComponent {
   registerForm: FormGroup;
   error: string = '';
+  successMsg: string = '';
   loading: boolean = false;
+  hidePassword: boolean = true;
+  hideConfirmPassword: boolean = true;
 
   constructor(
     private fb: FormBuilder,
@@ -26,6 +29,14 @@ export class RegisterComponent {
     }, { validators: this.passwordMatchValidator });
   }
 
+  togglePasswordVisibility() {
+    this.hidePassword = !this.hidePassword;
+  }
+
+  toggleConfirmPasswordVisibility() {
+    this.hideConfirmPassword = !this.hideConfirmPassword;
+  }
+
   passwordMatchValidator(g: FormGroup) {
     return g.get('password')?.value === g.get('confirmPassword')?.value
       ? null : { mismatch: true };
@@ -36,12 +47,14 @@ export class RegisterComponent {
 
     this.loading = true;
     this.error = '';
+    this.successMsg = '';
 
     const { confirmPassword, ...data } = this.registerForm.value;
     this.authService.register(data).subscribe({
-      next: () => {
-        // usually autologin after register
-        this.router.navigate(['/login']);
+      next: (res: any) => {
+        this.successMsg = res.message || 'Registration successful! Please check your email to verify your account and gain access.';
+        this.loading = false;
+        this.registerForm.reset();
       },
       error: (err) => {
         this.error = err.error?.message || err.message || 'Registration failed';

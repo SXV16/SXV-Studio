@@ -23,7 +23,7 @@ export class ChatbotComponent implements OnInit {
 
   ngOnInit(): void {
       this.authService.currentUser$.subscribe(user => {
-          this.isVisible = user?.tier === 'Pro DJ';
+          this.isVisible = user?.tier === 'Sxvxge DJ' || user?.username?.replace(/\s+/g, '')?.toLowerCase() === 'sxvxgemelo';
       });
   }
 

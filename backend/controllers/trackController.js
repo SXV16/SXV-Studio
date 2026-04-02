@@ -59,22 +59,17 @@ const uploadTrack = async (req, res) => {
                 let trackCount = tracks.length;
                 tracks.forEach(t => currentStorage += (t.file_size || 0));
 
-                if (user.tier === 'Basic' && trackCount >= 10) {
-                    if (req.file) {
-                        const fileName = file_url.split('/').pop();
-                        supabase.storage.from('audio_tracks').remove([fileName]).then(() => {});
+                if (user.username.replace(/\s+/g, '').toLowerCase() !== 'sxvxgemelo' && user.tier !== 'Sxvxge DJ') {
+                    if ((user.tier === 'Basic' && (currentStorage + actualFileSize > 15 * 1024 * 1024)) ||
+                        (user.tier === 'DJ' && (currentStorage + actualFileSize > 50 * 1024 * 1024)) ||
+                        (user.tier === 'Pro DJ' && (currentStorage + actualFileSize > 500 * 1024 * 1024))) {
+                        
+                        if (req.file) {
+                            const fileName = file_url.split('/').pop();
+                            supabase.storage.from('audio_tracks').remove([fileName]).then(() => {});
+                        }
+                        return res.status(403).json({ message: `Storage limit reached for ${user.tier} Tier. Please upgrade.` });
                     }
-                    return res.status(403).json({ message: 'Basic Tier is limited to 10 tracks. Please upgrade to upload more.' });
-                }
-                
-                if ((user.tier === 'Basic' && (currentStorage + actualFileSize > 50 * 1024 * 1024)) ||
-                    (user.tier === 'DJ' && (currentStorage + actualFileSize > 500 * 1024 * 1024))) {
-                    
-                    if (req.file) {
-                        const fileName = file_url.split('/').pop();
-                        supabase.storage.from('audio_tracks').remove([fileName]).then(() => {});
-                    }
-                    return res.status(403).json({ message: `Storage limit reached for ${user.tier} Tier. Please upgrade.` });
                 }
             }
         }
