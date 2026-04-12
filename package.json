@@ -3,8 +3,13 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "node backend/server.js",
+    "start:frontend": "ng serve",
     "build": "ng build",
+    "build:prod": "ng build --configuration production",
+    "install:all": "npm install && npm --prefix backend install",
+    "railway:build": "npm install && npm --prefix backend install && npm run build:prod",
+    "start:backend": "npm --prefix backend start",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TrackService, AudioTrack } from '../../services/track.service';
 import { DialogService } from '../../services/dialog.service';
+import { buildAssetUrl } from '../../utils/url.utils';
 
 @Component({
   selector: 'app-library',
@@ -58,10 +59,7 @@ export class LibraryComponent implements OnInit {
     }
 
     let url = track.file_url;
-    if (!url.startsWith('http')) {
-      const baseUrl = 'http://localhost:3000';
-      url = url.startsWith('/') ? `${baseUrl}${url}` : `${baseUrl}/${url}`;
-    }
+    url = buildAssetUrl(url);
 
     this.currentAudio = new Audio(url);
     this.currentAudio.play().catch(async e => {

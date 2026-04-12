@@ -34,7 +34,7 @@ const uploadProfilePic = multer({ storage, fileFilter });
 const getProfile = async (req, res) => {
     try {
         const user = await User.findByPk(req.user.id, {
-            attributes: ['id', 'username', 'email', 'artist_name', 'bio', 'profile_pic_url', 'tier', 'role']
+            attributes: ['id', 'username', 'email', 'artist_name', 'bio', 'profile_pic_url', 'tier', 'role', 'has_accepted_terms']
         });
         
         if (!user) {
@@ -71,10 +71,13 @@ const updateProfile = async (req, res) => {
             user: {
                 id: user.id,
                 username: user.username,
+                email: user.email,
                 artist_name: user.artist_name,
                 bio: user.bio,
                 profile_pic_url: user.profile_pic_url,
-                tier: user.tier
+                tier: user.tier,
+                role: user.role,
+                has_accepted_terms: user.has_accepted_terms
             }
         });
     } catch (error) {

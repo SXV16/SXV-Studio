@@ -1,8 +1,8 @@
 <div class="app-container neon-theme">
   <app-header></app-header>
 
-  <main class="main-content">
-    <router-outlet></router-outlet>
+  <main class="main-content" [@routeAnimations]="prepareRoute(outlet)">
+    <router-outlet #outlet="outlet"></router-outlet>
   </main>
 
   <app-chatbot></app-chatbot>

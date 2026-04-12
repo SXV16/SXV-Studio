@@ -23,6 +23,8 @@
     filter: blur(8px);
     z-index: -1;
     pointer-events: none;
+    will-change: transform, opacity, filter;
+    content-visibility: auto;
 }
 
 .hero-title {
@@ -34,6 +36,7 @@
 
 .glow-pulse {
     animation: pulse-glow 3s infinite alternate;
+    will-change: text-shadow; /* Offload repetitive shadow recalculations to GPU */
 }
 
 @keyframes pulse-glow {

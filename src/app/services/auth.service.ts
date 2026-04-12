@@ -1,14 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { buildApiUrl } from '../utils/url.utils';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiAuthUrl = 'http://localhost:3000/api/auth';
-  private apiProfileUrl = 'http://localhost:3000/api/profile';
-  private apiStripeUrl = 'http://localhost:3000/api/stripe';
+  private apiAuthUrl = buildApiUrl('/api/auth');
+  private apiProfileUrl = buildApiUrl('/api/profile');
+  private apiStripeUrl = buildApiUrl('/api/stripe');
   
   private currentUserSubject = new BehaviorSubject<any>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
@@ -109,9 +110,44 @@ export class AuthService {
     );
   }
 
+  createPortalSession(): Observable<any> {
+    return this.http.post(`${this.apiStripeUrl}/create-portal-session`, {}, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    });
+  }
+
+  getSubscriptionStatus(): Observable<any> {
+    return this.http.get(`${this.apiStripeUrl}/subscription-status`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    });
+  }
+
+  cancelSubscription(): Observable<any> {
+    return this.http.post(`${this.apiStripeUrl}/cancel-subscription`, {}, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    });
+  }
+
   // Password Migration
   syncMigratedPassword(email: string, newPassword: string): Observable<any> {
     return this.http.post(`${this.apiAuthUrl}/sync-password`, { email, newPassword });
+  }
+
+  acceptTerms(): Observable<any> {
+    return this.http.post(`${this.apiAuthUrl}/accept-terms`, {}, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    }).pipe(
+      tap((res: any) => {
+        if (res?.success) {
+          const currentUser = this.currentUserSubject.value;
+          if (currentUser) {
+            const updatedUser = { ...currentUser, has_accepted_terms: true };
+            localStorage.setItem('user', JSON.stringify(updatedUser));
+            this.currentUserSubject.next(updatedUser);
+          }
+        }
+      })
+    );
   }
 
   logout() {

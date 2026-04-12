@@ -1,5 +1,6 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY || 'sk_test_mock_fallback_key');
 const { User } = require('../models');
+const { getAppBaseUrl } = require('../config/appBaseUrl');
 
 // Configure Product Prices (In a real app, use Stripe Price IDs from your Dashboard)
 const PRICES = {
@@ -20,12 +21,12 @@ const createCheckoutSession = async (req, res) => {
         const priceId = PRICES[planTier];
 
         // Ensure FRONTEND_URL exists for return path
-        const origin = req.headers.origin || 'http://localhost:4200';
+        const origin = req.headers.origin || getAppBaseUrl();
 
         let sessionConfig = {
             payment_method_types: ['card'],
             mode: 'subscription',
-            customer_email: user.email,
+            ...((user.stripe_customer_id) ? { customer: user.stripe_customer_id } : { customer_email: user.email }),
             line_items: [
                 {
                     price_data: {
@@ -88,12 +89,36 @@ const handleWebhook = async (req, res) => {
                 const user = await User.findByPk(userId);
                 if (user) {
                     user.tier = newTier;
+                    if (session.customer) {
+                        user.stripe_customer_id = session.customer;
+                    }
+                    if (session.subscription) {
+                        user.stripe_subscription_id = session.subscription;
+                    }
                     await user.save();
-                    console.log(`Successfully upgraded user ${user.username} to ${newTier}`);
+                    console.log(`Successfully upgraded user ${user.username} to ${newTier} and saved Stripe IDs.`);
                 }
             } catch (err) {
                 console.error("DB Error updating tier after Stripe checkout", err);
             }
+        }
+    } else if (event.type === 'customer.subscription.deleted') {
+        const subscription = event.data.object;
+        try {
+            const user = await User.findOne({ where: { stripe_subscription_id: subscription.id } });
+            if (user) {
+                user.tier = 'Basic';
+                user.stripe_subscription_id = null;
+                await user.save();
+                console.log(`User ${user.username} subscription deleted. Downgraded to Basic.`);
+            }
+        } catch (err) {
+            console.error("DB Error downgrading tier after subscription deletion", err);
+        }
+    } else if (event.type === 'customer.subscription.updated') {
+        const subscription = event.data.object;
+        if (subscription.cancel_at_period_end) {
+            console.log(`Subscription for ${subscription.id} is set to cancel at period end.`);
         }
     }
 
@@ -131,8 +156,72 @@ const verifySession = async (req, res) => {
     }
 };
 
+const createPortalSession = async (req, res) => {
+    try {
+        const user = req.user;
+        if (!user.stripe_customer_id) {
+            return res.status(400).json({ error: 'No active Stripe billing found for this user.' });
+        }
+        const origin = req.headers.origin || getAppBaseUrl();
+
+        const session = await stripe.billingPortal.sessions.create({
+            customer: user.stripe_customer_id,
+            return_url: `${origin}/profile`,
+        });
+
+        res.json({ url: session.url });
+    } catch (error) {
+        console.error('Error creating portal session:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+const getSubscriptionStatus = async (req, res) => {
+    try {
+        const user = req.user;
+        if (!user.stripe_subscription_id) {
+            return res.json({ active: false });
+        }
+        const subscription = await stripe.subscriptions.retrieve(user.stripe_subscription_id);
+        res.json({
+            active: subscription.status === 'active' || subscription.status === 'trialing',
+            cancel_at_period_end: subscription.cancel_at_period_end,
+            current_period_end: subscription.current_period_end // UNIX timestamp
+        });
+    } catch (error) {
+        console.error('Error fetching subscription status:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+const cancelSubscription = async (req, res) => {
+    try {
+        const user = req.user;
+        if (!user.stripe_subscription_id) {
+            return res.status(400).json({ error: 'No active subscription found.' });
+        }
+        
+        // Tells Stripe to terminate billing completely at the end of the current period.
+        const subscription = await stripe.subscriptions.update(user.stripe_subscription_id, {
+            cancel_at_period_end: true
+        });
+
+        res.json({
+            success: true,
+            cancel_at_period_end: subscription.cancel_at_period_end,
+            current_period_end: subscription.current_period_end
+        });
+    } catch (error) {
+        console.error('Error cancelling subscription:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
 module.exports = {
     createCheckoutSession,
     handleWebhook,
-    verifySession
+    verifySession,
+    createPortalSession,
+    getSubscriptionStatus,
+    cancelSubscription
 };

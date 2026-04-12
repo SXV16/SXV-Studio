@@ -32,4 +32,10 @@ router.post('/reset-password', authController.resetPassword);
 // @access  Public
 router.post('/sync-password', authController.syncPassword);
 
+// @route   POST /api/auth/accept-terms
+// @desc    Accept native TOS
+// @access  Private
+const { authMiddleware } = require('../middlewares/authMiddleware');
+router.post('/accept-terms', authMiddleware, authController.acceptTerms);
+
 module.exports = router;

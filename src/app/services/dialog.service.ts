@@ -8,6 +8,9 @@ export interface DialogOptions {
   defaultValue?: string;
   confirmText?: string;
   cancelText?: string;
+  auxiliaryLinkText?: string;
+  auxiliaryDialogTitle?: string;
+  auxiliaryDialogMessage?: string;
 }
 
 @Injectable({
@@ -33,7 +36,13 @@ export class DialogService {
     });
   }
 
-  confirm(message: string, title: string = 'Confirm Action', confirmText: string = 'Proceed', cancelText: string = 'Cancel'): Promise<boolean> {
+  confirm(
+    message: string,
+    title: string = 'Confirm Action',
+    confirmText: string = 'Proceed',
+    cancelText: string = 'Cancel',
+    extraOptions: Partial<DialogOptions> = {}
+  ): Promise<boolean> {
     return new Promise((resolve) => {
       this.resolveFn = resolve;
       this.dialogSubject.next({
@@ -41,7 +50,8 @@ export class DialogService {
         title,
         message,
         confirmText,
-        cancelText
+        cancelText,
+        ...extraOptions
       });
     });
   }

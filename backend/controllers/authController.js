@@ -6,12 +6,13 @@ const { Op } = require('sequelize');
 const { createClient } = require('@supabase/supabase-js');
 const { isMailConfigured } = require('../services/mailService');
 const { sendVerificationEmail, sendPasswordResetEmail } = require('../services/authEmailService');
+const { getAppBaseUrl } = require('../config/appBaseUrl');
 
 const supabaseUrl = process.env.SUPABASE_URL || 'https://pzkqeeenbzkltiqccdfn.supabase.co';
 const supabaseKey = process.env.SUPABASE_ANON_KEY || 'sb_publishable_PbEGhjU3Jf5cm23AfwUaWg_wKXY_xz8';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const getSupabaseResetRedirect = () => process.env.SUPABASE_RESET_REDIRECT_URL || `${process.env.APP_BASE_URL || 'http://localhost:4200'}/reset-password`;
+const getSupabaseResetRedirect = () => process.env.SUPABASE_RESET_REDIRECT_URL || `${getAppBaseUrl()}/reset-password`;
 
 // Registration Logic
 const registerUser = async (req, res) => {
@@ -79,7 +80,8 @@ const registerUser = async (req, res) => {
                 id: newUser.id,
                 username: newUser.username,
                 email: newUser.email,
-                tier: newUser.tier
+                tier: newUser.tier,
+                has_accepted_terms: newUser.has_accepted_terms
             }
         });
     } catch (error) {
@@ -134,7 +136,8 @@ const loginUser = async (req, res) => {
                 id: user.id,
                 username: user.username,
                 email: user.email,
-                tier: user.tier
+                tier: user.tier,
+                has_accepted_terms: user.has_accepted_terms
             }
         });
     } catch (error) {
@@ -298,11 +301,27 @@ const syncPassword = async (req, res) => {
     }
 };
 
+const acceptTerms = async (req, res) => {
+    try {
+        const user = await User.findByPk(req.user.id);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        user.has_accepted_terms = true;
+        await user.save();
+        res.json({ success: true, has_accepted_terms: true });
+    } catch (error) {
+        console.error('Accept Terms Error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
 module.exports = {
     registerUser,
     loginUser,
     verifyEmail,
     forgotPassword,
     resetPassword,
-    syncPassword
+    syncPassword,
+    acceptTerms
 };

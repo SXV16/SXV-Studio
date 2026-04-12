@@ -13,6 +13,7 @@ export class DialogComponent implements OnInit, OnDestroy {
   isOpen = false;
   options: DialogOptions | null = null;
   inputValue: string = '';
+  auxiliaryOpen = false;
   private subscription!: Subscription;
 
   constructor(private dialogService: DialogService) {}
@@ -31,6 +32,7 @@ export class DialogComponent implements OnInit, OnDestroy {
       } else {
         this.isOpen = false;
         this.options = null;
+        this.auxiliaryOpen = false;
       }
     });
   }
@@ -51,6 +53,17 @@ export class DialogComponent implements OnInit, OnDestroy {
     } else {
       this.dialogService.close(null);
     }
+  }
+
+  openAuxiliaryDialog(event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.auxiliaryOpen = true;
+  }
+
+  closeAuxiliaryDialog(event?: MouseEvent) {
+    event?.stopPropagation();
+    this.auxiliaryOpen = false;
   }
 
   onOverlayClick(event: MouseEvent) {

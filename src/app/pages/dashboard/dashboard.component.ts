@@ -8,6 +8,7 @@ import { SupabaseService } from '../../services/supabase.service';
 import { AudioService } from '../../services/audio.service';
 import { AuthService } from '../../services/auth.service';
 import { DialogService } from '../../services/dialog.service';
+import { buildAssetUrl } from '../../utils/url.utils';
 
 export interface DawClip {
     id: string;
@@ -229,28 +230,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   async armTrack(trk: DawTrack) { trk.isRecording = !trk.isRecording; await this.dialogService.alert(trk.name + (trk.isRecording ? ' Armed' : ' Disarmed')); }
   async togglePhase(trk: DawTrack) { await this.dialogService.alert('Phase polarity inverted (180deg) for ' + trk.name); }
 
-  dawTracks: DawTrack[] = [
-      {
-          id: 'trk-1', name: 'TRK 1', volume: 80, pan: -20, isMuted: false, isSoloed: false,
-          eq: { low: 0, mid: 0, high: 0 }, delayMix: 0, reverbMix: 0, compression: 0,
-          clips: [{ id: 'c1', title: 'Synth Melody.wav', bufferUrl: null, startPx: 0, widthPx: 250, isRecording: false }]
-      },
-      {
-          id: 'trk-2', name: 'VOCAL', volume: 65, pan: 10, isMuted: false, isSoloed: false,
-          eq: { low: -5, mid: 10, high: 8 }, delayMix: 25, reverbMix: 40, compression: 60,
-          clips: [{ id: 'c2', title: 'Vocal Take 1', bufferUrl: null, startPx: 30, widthPx: 120, isRecording: true }]
-      },
-      {
-          id: 'trk-3', name: 'DRUMS', volume: 80, pan: 0, isMuted: false, isSoloed: false,
-          eq: { low: 12, mid: -4, high: 5 }, delayMix: 0, reverbMix: 10, compression: 80,
-          clips: [{ id: 'c3', title: 'Kick.wav', bufferUrl: null, startPx: 0, widthPx: 100, isRecording: false }]
-      },
-      {
-          id: 'trk-4', name: 'BASS', volume: 70, pan: -2, isMuted: false, isSoloed: false,
-          eq: { low: 18, mid: 0, high: -10 }, delayMix: 0, reverbMix: 0, compression: 50,
-          clips: [{ id: 'c4', title: 'Sub.wav', bufferUrl: null, startPx: 50, widthPx: 200, isRecording: false }]
-      }
-  ];
+  dawTracks: DawTrack[] = [];
 
   constructor(
     private trackService: TrackService, 
@@ -309,7 +289,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   generateDawTracks() {
       // Physically expand the DAW constraints out to 20 dynamic tracks for dense projects
-      for (let i = 5; i <= 20; i++) {
+      for (let i = 1; i <= 20; i++) {
           this.dawTracks.push({
               id: `trk-${i}`, name: `TRK ${i}`, volume: 80, pan: 0, isMuted: false, isSoloed: false,
               eq: { low: 0, mid: 0, high: 0 }, delayMix: 0, reverbMix: 0, compression: 0,
@@ -549,10 +529,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   downloadTrack(track: AudioTrack) {
     if (!track.file_url) return;
     let url = track.file_url;
-    if (!url.startsWith('http')) {
-      const baseUrl = 'http://localhost:3000';
-      url = url.startsWith('/') ? `${baseUrl}${url}` : `${baseUrl}/${url}`;
-    }
+    url = buildAssetUrl(url);
 
     const a = document.createElement('a');
     a.href = url;
@@ -598,10 +575,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
 
     let url = track.file_url;
-    if (!url.startsWith('http')) {
-      const baseUrl = 'http://localhost:3000';
-      url = url.startsWith('/') ? `${baseUrl}${url}` : `${baseUrl}/${url}`;
-    }
+    url = buildAssetUrl(url);
 
     this.currentAudio = new Audio(url);
     this.currentAudio.play().catch(async e => {
@@ -989,10 +963,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       if (!track.file_url) return;
       
       let url = track.file_url;
-      if (!url.startsWith('http')) {
-          const baseUrl = 'http://localhost:3000';
-          url = url.startsWith('/') ? `${baseUrl}${url}` : `${baseUrl}/${url}`;
-      }
+      url = buildAssetUrl(url);
 
       try {
           // Display a temporary loading state or just wait
@@ -1068,10 +1039,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
       if (!track.file_url) return;
       let url = track.file_url;
-      if (!url.startsWith('http')) {
-          const baseUrl = 'http://localhost:3000';
-          url = url.startsWith('/') ? `${baseUrl}${url}` : `${baseUrl}/${url}`;
-      }
+      url = buildAssetUrl(url);
 
       try {
           const audioBuffer = await this.audioService.loadTrackBuffer(url);

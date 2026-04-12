@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
+import { buildApiUrl } from '../utils/url.utils';
 
 export interface AudioTrack {
   id: number;
@@ -14,7 +15,7 @@ export interface AudioTrack {
   providedIn: 'root'
 })
 export class TrackService {
-  private apiUrl = 'http://localhost:3000/api/tracks';
+  private apiUrl = buildApiUrl('/api/tracks');
 
   constructor(private http: HttpClient) { }
 

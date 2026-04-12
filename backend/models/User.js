@@ -58,6 +58,18 @@ const User = sequelize.define('User', {
     reset_password_expires: {
         type: DataTypes.DATE,
         allowNull: true
+    },
+    stripe_customer_id: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    stripe_subscription_id: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    has_accepted_terms: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     }
 }, {
     tableName: 'users',

@@ -1,6 +1,5 @@
 const { sendMail } = require('./mailService');
-
-const getAppBaseUrl = () => process.env.APP_BASE_URL || 'http://localhost:4200';
+const { getAppBaseUrl } = require('../config/appBaseUrl');
 
 const sendVerificationEmail = async ({ email, token, username }) => {
     const verificationUrl = `${getAppBaseUrl()}/verify?token=${encodeURIComponent(token)}`;

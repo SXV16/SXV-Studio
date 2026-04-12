@@ -1,5 +1,6 @@
 // Script to create the sxv_studio database if it does not exist
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 const mysql = require('mysql2/promise');
 
 const initializeDatabase = async () => {

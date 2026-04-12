@@ -1,6 +1,8 @@
-require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const fs = require('fs');
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 const { sequelize, testConnection } = require('./config/db');
 require('./models'); // Import to define associations
 
@@ -16,7 +18,6 @@ const authRoutes = require('./routes/authRoutes');
 const trackRoutes = require('./routes/trackRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const stripeRoutes = require('./routes/stripeRoutes');
-const path = require('path');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/tracks', trackRoutes);
@@ -32,28 +33,42 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
     }
 }));
 
-// Basic Route for Testing
-app.get('/', (req, res) => {
-    res.json({ message: 'Welcome to SXV Studio API' });
-});
+const frontendDistPath = path.resolve(__dirname, '..', 'dist', 'sxv-studio');
+if (fs.existsSync(frontendDistPath)) {
+    app.use(express.static(frontendDistPath));
+
+    app.get('*', (req, res, next) => {
+        if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+            return next();
+        }
+
+        return res.sendFile(path.join(frontendDistPath, 'index.html'));
+    });
+} else {
+    // Basic Route for Testing
+    app.get('/', (req, res) => {
+        res.json({ message: 'Welcome to SXV Studio API' });
+    });
+}
 
 // Sync Database & Start Server
 const PORT = process.env.PORT || 3000;
 
 const startServer = async () => {
-    await testConnection();
     try {
+        await testConnection();
         // Sync models with database
         // In dev, sometimes alter: true is useful. Avoid force: true to not drop tables.
         await sequelize.sync();
         console.log('Database synced');
+        
+        app.listen(PORT, () => {
+            console.log(`Server is running on port ${PORT}.`);
+        });
     } catch (error) {
-        console.error('Failed to sync database:', error);
+        console.error('Failed to start server:', error);
+        process.exit(1);
     }
-
-    app.listen(PORT, () => {
-        console.log(`Server is running on port ${PORT}.`);
-    });
 };
 
 startServer();

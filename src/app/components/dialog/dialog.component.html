@@ -5,6 +5,14 @@
     </div>
     <div class="dialog-body">
       <p class="dialog-message">{{ options?.message }}</p>
+
+      <button
+        *ngIf="options?.auxiliaryLinkText && options?.auxiliaryDialogMessage"
+        type="button"
+        class="dialog-aux-link"
+        (click)="openAuxiliaryDialog($event)">
+        {{ options?.auxiliaryLinkText }}
+      </button>
       
       <div *ngIf="options?.type === 'prompt'" class="dialog-input-group">
         <input #promptInput type="text" class="form-control" [(ngModel)]="inputValue" (keydown.enter)="confirm()">
@@ -13,6 +21,18 @@
     <div class="dialog-footer">
       <button *ngIf="options?.type !== 'alert'" class="btn btn-secondary" (click)="cancel()">{{ options?.cancelText || 'Cancel' }}</button>
       <button class="btn btn-primary" (click)="confirm()">{{ options?.confirmText || 'OK' }}</button>
+    </div>
+  </div>
+
+  <div class="dialog-panel dialog-panel-secondary" *ngIf="auxiliaryOpen" (click)="$event.stopPropagation()">
+    <div class="dialog-header">
+      <h3 class="dialog-title">{{ options?.auxiliaryDialogTitle || 'Details' }}</h3>
+    </div>
+    <div class="dialog-body dialog-body-secondary">
+      <p class="dialog-message dialog-message-secondary">{{ options?.auxiliaryDialogMessage }}</p>
+    </div>
+    <div class="dialog-footer">
+      <button class="btn btn-primary" (click)="closeAuxiliaryDialog($event)">Close</button>
     </div>
   </div>
 </div>
