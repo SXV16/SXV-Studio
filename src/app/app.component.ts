@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { AuthService } from './services/auth.service';
 import { DialogService } from './services/dialog.service';
 import { Router, RouterOutlet } from '@angular/router';
@@ -8,7 +8,8 @@ import { routeAnimations } from './route-animations';
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  animations: [routeAnimations]
+  animations: [routeAnimations],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent implements OnInit {
   title = 'sxv-studio';
