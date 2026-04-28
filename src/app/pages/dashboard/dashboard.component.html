@@ -185,23 +185,23 @@
         <div *ngIf="activeTab === 'pro'">
             <h2 class="workspace-title">Cloud Services & Upgrades</h2>
             <!-- Pro Container content omitted for brevity -->
-            <div class="pro-container" style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
-                <div class="plan-card" style="flex: 1; min-width: 250px; max-width: 300px;">
+            <div class="pro-container pricing-plans">
+                <div class="plan-card pricing-plan pricing-plan-basic">
                     <h3 class="text-muted">Basic Tier</h3>
                     <div class="plan-price">Free</div>
                     <ul class="plan-features text-muted">
                         <li>15MB Storage Limit</li>
                         <li>Local Storage</li>
                         <li>Basic EQ</li>
-                        <li><span style="text-decoration: line-through; color: #555;">Editor & Mixer Access</span></li>
+                        <li><span class="plan-feature-disabled">Editor & Mixer Access</span></li>
                     </ul>
                     <button class="btn btn-secondary w-100" disabled *ngIf="!currentUser || (currentUser.tier === 'Basic' && currentUser?.username?.replace(' ', '')?.toLowerCase() !== 'sxvxgemelo')">Current Plan</button>
                     <button class="btn btn-secondary w-100" disabled *ngIf="(currentUser && currentUser.tier !== 'Basic') || currentUser?.username?.replace(' ', '')?.toLowerCase() === 'sxvxgemelo'">Included</button>
                 </div>
                 
-                <div class="plan-card" style="flex: 1; min-width: 250px; max-width: 300px; border: 1px solid var(--neon-crimson); position: relative;">
+                <div class="plan-card pricing-plan pricing-plan-dj">
                     <h3 class="text-neon-red">DJ Tier</h3>
-                    <div class="plan-price text-neon-red">$2.99<span style="font-size: 1rem; color: #888;">/mo</span></div>
+                    <div class="plan-price text-neon-red">$2.99<span class="plan-price-period">/mo</span></div>
                     <ul class="plan-features">
                         <li>50MB Cloud Storage</li>
                         <li>Advanced Multi-track Mixing</li>
@@ -213,33 +213,33 @@
                     <button class="btn btn-secondary w-100" disabled *ngIf="currentUser?.tier === 'Pro DJ' || currentUser?.tier === 'Sxvxge DJ' || currentUser?.username?.replace(' ', '')?.toLowerCase() === 'sxvxgemelo'">Included</button>
                 </div>
 
-                <div class="plan-card pro-active" style="flex: 1; min-width: 250px; max-width: 300px; position: relative;">
-                    <div style="position: absolute; top: -10px; right: 20px; background: var(--neon-red); color: #fff; padding: 2px 10px; font-size: 0.7rem; font-weight: bold; border-radius: 10px;">POPULAR</div>
+                <div class="plan-card pricing-plan pricing-plan-pro pro-active">
+                    <div class="plan-badge plan-badge-popular">POPULAR</div>
                     <h3 class="text-neon-dark-red">Pro DJ Tier</h3>
-                    <div class="plan-price text-neon-red">$9.99<span style="font-size: 1rem; color: #888;">/mo</span></div>
+                    <div class="plan-price text-neon-red">$9.99<span class="plan-price-period">/mo</span></div>
                     <ul class="plan-features">
                         <li>500MB Cloud Storage</li>
                         <li>Advanced Multi-track Mixing</li>
                         <li>VST Plugin Support</li>
-                        <li><span style="text-decoration: line-through; color: #555;">Mastering AI & Chatbot</span></li>
+                        <li><span class="plan-feature-disabled">Mastering AI & Chatbot</span></li>
                     </ul>
                     <button class="btn btn-primary w-100" (click)="upgradeTier('Pro DJ')" *ngIf="currentUser?.tier !== 'Pro DJ' && currentUser?.tier !== 'Sxvxge DJ' && currentUser?.username?.replace(' ', '')?.toLowerCase() !== 'sxvxgemelo'">Upgrade Now</button>
                     <button class="btn btn-primary w-100" disabled *ngIf="currentUser?.tier === 'Pro DJ' && currentUser?.username?.replace(' ', '')?.toLowerCase() !== 'sxvxgemelo'">Current Plan</button>
                     <button class="btn btn-secondary w-100" disabled *ngIf="currentUser?.tier === 'Sxvxge DJ' || currentUser?.username?.replace(' ', '')?.toLowerCase() === 'sxvxgemelo'">Included</button>
                 </div>
 
-                <div class="plan-card sxvxge-tier" style="flex: 1; min-width: 250px; max-width: 300px; position: relative; border: 2px solid #ff4040; background: linear-gradient(145deg, #1a0505, #000); box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);">
-                    <div style="position: absolute; top: -10px; right: 20px; background: #fff; color: #000; padding: 2px 10px; font-size: 0.7rem; font-weight: bold; border-radius: 10px;">ULTIMATE</div>
-                    <h3 style="color: #fff; text-shadow: 0 0 10px #ff0000; letter-spacing: 2px;">Sxvxge DJ</h3>
-                    <div class="plan-price text-neon-red" style="font-size: 2.2rem;">$19.99<span style="font-size: 1rem; color: #aaa;">/mo</span></div>
-                    <ul class="plan-features" style="color: #eee;">
-                        <li><strong style="color: #fff">Unlimited Cloud Storage</strong></li>
+                <div class="plan-card pricing-plan pricing-plan-ultimate sxvxge-tier">
+                    <div class="plan-badge plan-badge-ultimate">ULTIMATE</div>
+                    <h3 class="plan-title-ultimate">Sxvxge DJ</h3>
+                    <div class="plan-price text-neon-red plan-price-ultimate">$19.99<span class="plan-price-period">/mo</span></div>
+                    <ul class="plan-features plan-features-ultimate">
+                        <li><strong class="plan-feature-highlight">Unlimited Cloud Storage</strong></li>
                         <li>Advanced Multi-track Mixing</li>
                         <li>VST Plugin Support</li>
-                        <li><strong style="color:#ff8080;">Mastering AI & Chatbot</strong></li>
+                        <li><strong class="plan-feature-accent">Mastering AI & Chatbot</strong></li>
                     </ul>
-                    <button class="btn btn-primary w-100" style="background: #ff4040; color: #fff; border-color: #ff0000;" (click)="upgradeTier('Sxvxge DJ')" *ngIf="currentUser?.tier !== 'Sxvxge DJ' && currentUser?.username?.replace(' ', '')?.toLowerCase() !== 'sxvxgemelo'">Upgrade Now</button>
-                    <button class="btn btn-secondary w-100" style="background: #220000; color: #fff;" disabled *ngIf="currentUser?.tier === 'Sxvxge DJ' || currentUser?.username?.replace(' ', '')?.toLowerCase() === 'sxvxgemelo'">Current Plan</button>
+                    <button class="btn btn-primary btn-ultimate w-100" (click)="upgradeTier('Sxvxge DJ')" *ngIf="currentUser?.tier !== 'Sxvxge DJ' && currentUser?.username?.replace(' ', '')?.toLowerCase() !== 'sxvxgemelo'">Upgrade Now</button>
+                    <button class="btn btn-secondary btn-ultimate-current w-100" disabled *ngIf="currentUser?.tier === 'Sxvxge DJ' || currentUser?.username?.replace(' ', '')?.toLowerCase() === 'sxvxgemelo'">Current Plan</button>
                 </div>
             </div>
         </div>

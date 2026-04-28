@@ -8,43 +8,13 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './layout/header/header.component';
 import { FooterComponent } from './layout/footer/footer.component';
-import { HomeComponent } from './pages/home/home.component';
-import { LoginComponent } from './pages/auth/login/login.component';
-import { RegisterComponent } from './pages/auth/register/register.component';
-import { LibraryComponent } from './pages/library/library.component';
-import { DashboardComponent } from './pages/dashboard/dashboard.component';
-import { PrivacyComponent } from './pages/privacy/privacy.component';
-import { TermsComponent } from './pages/terms/terms.component';
-import { SupportComponent } from './pages/support/support.component';
-import { WaveformComponent } from './components/waveform/waveform.component';
-import { VerifyComponent } from './pages/auth/verify/verify.component';
-import { ChatbotComponent } from './components/chatbot/chatbot.component';
-import { ProfileComponent } from './pages/profile/profile.component';
-import { DialogComponent } from './components/dialog/dialog.component';
-
-import { ForgotPasswordComponent } from './pages/auth/forgot-password/forgot-password.component';
-import { ResetPasswordComponent } from './pages/auth/reset-password/reset-password.component';
+import { SharedModule } from './shared/shared.module';
 
 @NgModule({
   declarations: [
     AppComponent,
     HeaderComponent,
-    FooterComponent,
-    HomeComponent,
-    LoginComponent,
-    RegisterComponent,
-    LibraryComponent,
-    DashboardComponent,
-    PrivacyComponent,
-    TermsComponent,
-    SupportComponent,
-    WaveformComponent,
-    VerifyComponent,
-    ChatbotComponent,
-    ProfileComponent,
-    DialogComponent,
-    ForgotPasswordComponent,
-    ResetPasswordComponent
+    FooterComponent
   ],
   imports: [
     BrowserModule,
@@ -52,7 +22,8 @@ import { ResetPasswordComponent } from './pages/auth/reset-password/reset-passwo
     AppRoutingModule,
     HttpClientModule,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    SharedModule
   ],
   providers: [],
   bootstrap: [AppComponent]

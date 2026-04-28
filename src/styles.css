@@ -335,3 +335,4 @@ body.light-theme .hero-section::before {
     filter: invert(1) hue-rotate(180deg) blur(8px) !important;
     opacity: 0.2 !important;
 }
+

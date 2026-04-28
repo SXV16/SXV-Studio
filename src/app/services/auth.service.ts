@@ -11,7 +11,12 @@ export class AuthService {
   private apiProfileUrl = buildApiUrl('/api/profile');
   private apiStripeUrl = buildApiUrl('/api/stripe');
   
-  private currentUserSubject = new BehaviorSubject<any>(null);
+  private currentUserSubject = new BehaviorSubject<any>(
+    (() => {
+      try { return JSON.parse(localStorage.getItem('user') || 'null'); } 
+      catch { return null; }
+    })()
+  );
   public currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(private http: HttpClient) {

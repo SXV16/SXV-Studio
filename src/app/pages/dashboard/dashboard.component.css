@@ -272,6 +272,9 @@
     margin-top: 40px;
     flex-wrap: wrap;
 }
+.pricing-plans {
+    gap: 20px;
+}
 .plan-card {
     background: #111;
     border: 1px solid #333;
@@ -280,6 +283,23 @@
     width: 300px;
     text-align: center;
     position: relative;
+}
+.pricing-plan {
+    flex: 1;
+    min-width: 250px;
+    max-width: 300px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+}
+.pricing-plan:hover {
+    transform: translateY(-4px);
+}
+.pricing-plan-dj {
+    border-color: var(--neon-crimson);
+}
+.pricing-plan-ultimate {
+    border: 2px solid #ff4040;
+    background: linear-gradient(145deg, #1a0505, #000);
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
 }
 .plan-card.pro-active {
     border-color: var(--neon-red);
@@ -292,9 +312,122 @@
 }
 
 .plan-price { font-size: 2.5rem; font-weight: bold; margin: 20px 0; color: #fff; }
+.plan-price-period {
+    font-size: 1rem;
+    color: #888;
+}
+.plan-price-ultimate {
+    font-size: 2.2rem;
+}
 .plan-features { list-style: none; padding: 0; margin: 0 0 30px 0; text-align: left; }
 .plan-features li { margin-bottom: 10px; color: #bbb; border-bottom: 1px solid #222; padding-bottom: 10px; }
 .plan-features li::before { content: '✓'; color: var(--neon-red); margin-right: 10px; }
+.plan-features-ultimate {
+    color: #eee;
+}
+.plan-feature-disabled {
+    text-decoration: line-through;
+    color: #555;
+}
+.plan-feature-highlight {
+    color: #fff;
+}
+.plan-feature-accent {
+    color: #ff8080;
+}
+.plan-badge {
+    position: absolute;
+    top: -10px;
+    right: 20px;
+    padding: 2px 10px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    border-radius: 10px;
+}
+.plan-badge-popular {
+    background: var(--neon-red);
+    color: #fff;
+}
+.plan-badge-ultimate {
+    background: #fff;
+    color: #000;
+}
+.plan-title-ultimate {
+    color: #fff;
+    text-shadow: 0 0 10px #ff0000;
+    letter-spacing: 2px;
+}
+.btn-ultimate {
+    background: #ff4040;
+    color: #fff;
+    border-color: #ff0000;
+}
+.btn-ultimate-current {
+    background: #220000;
+    color: #fff;
+}
+
+:host-context(body.light-theme) .pricing-plan {
+    background: linear-gradient(180deg, #ffffff 0%, #f7f5f5 100%);
+    border-color: #dfd6d6;
+    box-shadow: 0 12px 30px rgba(32, 20, 20, 0.08);
+}
+
+:host-context(body.light-theme) .pricing-plan .plan-price {
+    color: #161616;
+}
+
+:host-context(body.light-theme) .pricing-plan .plan-price-period,
+:host-context(body.light-theme) .pricing-plan .plan-features li,
+:host-context(body.light-theme) .pricing-plan.text-muted,
+:host-context(body.light-theme) .pricing-plan .text-muted,
+:host-context(body.light-theme) .pricing-plan h3.text-muted {
+    color: #5f5555 !important;
+}
+
+:host-context(body.light-theme) .pricing-plan .plan-features li {
+    border-bottom-color: #eadede;
+}
+
+:host-context(body.light-theme) .pricing-plan .plan-feature-disabled {
+    color: #9b8f8f;
+}
+
+:host-context(body.light-theme) .pricing-plan-dj {
+    border-color: #d87373;
+}
+
+:host-context(body.light-theme) .pricing-plan-pro {
+    box-shadow: 0 14px 34px rgba(255, 0, 0, 0.12);
+}
+
+:host-context(body.light-theme) .pricing-plan-ultimate {
+    background: linear-gradient(180deg, #fff5f5 0%, #fff 100%);
+    border-color: #ff7a7a;
+    box-shadow: 0 18px 40px rgba(255, 70, 70, 0.16);
+}
+
+:host-context(body.light-theme) .plan-badge-ultimate {
+    background: #201818;
+    color: #fff;
+}
+
+:host-context(body.light-theme) .plan-title-ultimate,
+:host-context(body.light-theme) .plan-features-ultimate,
+:host-context(body.light-theme) .plan-feature-highlight {
+    color: #201414;
+    text-shadow: none;
+}
+
+:host-context(body.light-theme) .plan-feature-accent {
+    color: #c62828;
+}
+
+:host-context(body.light-theme) .btn-ultimate-current {
+    background: #f5dede;
+    color: #6b1f1f;
+    border: 1px solid #dfbcbc;
+}
 
 /* =========================================
    Right Panel (Mixer)
